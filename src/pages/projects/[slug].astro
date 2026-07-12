@@ -2,7 +2,8 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 
-// Generates one static page per project file at build time.
+// Static fallback page per project, for deep links and SEO.
+// Styled as a single XP window sitting on the Bliss wallpaper.
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
   return projects.map((p) => ({
@@ -15,22 +16,26 @@ const { project } = Astro.props;
 const { Content } = await project.render();
 ---
 
-<Base title={`${project.data.title} — bwubbu`} description={project.data.summary}>
-  <a href="/" class="font-mono text-sm text-magenta hover:underline">&lt; back</a>
-
-  <article class="mt-6">
-    <h1 class="font-pixel text-cyan text-xl md:text-2xl leading-relaxed">
-      {project.data.title}
-    </h1>
-    <ul class="flex flex-wrap gap-2 mt-5">
-      {project.data.tech.map((t) => (
-        <li class="font-mono text-xs text-neon border border-edge px-2 py-1">{t}</li>
-      ))}
-    </ul>
-
-    <!-- Markdown body renders here, styled by Tailwind Typography-free prose classes -->
-    <div class="mt-8 font-mono text-crt text-sm leading-relaxed space-y-4 [&_h2]:font-pixel [&_h2]:text-magenta [&_h2]:text-sm [&_h2]:mt-8 [&_h2]:mb-2 [&_a]:text-cyan [&_a]:underline [&_code]:text-neon">
-      <Content />
+<Base title={`${project.data.title} — bwubbu`} description={project.data.summary} bodyClass="docpage">
+  <section class="win open active">
+    <header class="tbar">
+      <h2>{project.slug}.md</h2>
+      <a class="wbtn close-b" href="/" aria-label="Back to desktop">✕</a>
+    </header>
+    <div class="toolbar">
+      <a class="tb" href="/"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#3f9d2f"></circle><path d="M14.5 7 9 12l5.5 5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Back to desktop</a>
     </div>
-  </article>
+    <div class="wbody"><div class="wpad prose">
+      <h1>{project.data.title}</h1>
+      <p class="summary">{project.data.summary}</p>
+      {project.data.tech.length > 0 && <ul class="chips">{project.data.tech.map((t) => <li>{t}</li>)}</ul>}
+      {(project.data.repo || project.data.demo) && (
+        <div class="linkrow">
+          {project.data.repo && <a href={project.data.repo} target="_blank" rel="noreferrer">View repo</a>}
+          {project.data.demo && <a href={project.data.demo} target="_blank" rel="noreferrer">Live demo</a>}
+        </div>
+      )}
+      <Content />
+    </div></div>
+  </section>
 </Base>
