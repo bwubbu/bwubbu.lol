@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.tsx';
+import ProjectCard from '../components/ProjectCard.astro';
+
+// Pull projects at build time, newest first.
+const projects = (await getCollection('projects')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Base>
+  <!-- client:load hydrates ONLY this component; the rest of the page is static HTML -->
+  <Hero name="bwubbu" client:load />
+
+  <section class="mt-14">
+    <h2 class="font-pixel text-crt text-base mb-6">
+      <span class="text-neon">//</span> projects
+    </h2>
+    <div class="grid gap-5 md:grid-cols-2">
+      {projects.map((p) => (
+        <ProjectCard
+          title={p.data.title}
+          summary={p.data.summary}
+          tech={p.data.tech}
+          href={`/projects/${p.slug}`}
+          repo={p.data.repo}
+          demo={p.data.demo}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <h2 class="font-pixel text-crt text-base mb-6">
+      <span class="text-neon">//</span> about
+    </h2>
+    <p class="font-mono text-dim text-sm leading-relaxed">
+      Who you are, what you do, hobbies, whatever. Edit me in
+      <code class="text-cyan">src/pages/index.astro</code>.
+    </p>
+  </section>
+
+  <footer class="mt-20 border-t border-edge pt-6 font-mono text-xs text-dim">
+    <span class="text-neon animate-blink">█</span> bwubbu.lol — built with astro
+  </footer>
+</Base>

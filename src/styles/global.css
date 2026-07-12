@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Pixel heading font + readable mono body, via Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-void text-crt font-mono;
+  /* Subtle CRT vignette */
+  background-image: radial-gradient(circle at 50% 0%, #17172400 0%, #00000055 100%);
+}
+
+/* Keep pixel art / images crisp instead of blurry when scaled */
+img.pixelated {
+  image-rendering: pixelated;
+}
+
+/* CRT scanline overlay — add class="crt" to a wrapper to get the effect */
+.crt::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03) 0px,
+    rgba(255, 255, 255, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  z-index: 50;
+}
+
+/* Respect users who don't want motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,29 @@
+---
+interface Props {
+  title: string;
+  summary: string;
+  tech: string[];
+  href: string;
+  repo?: string;
+  demo?: string;
+}
+const { title, summary, tech, href, repo, demo } = Astro.props;
+---
+
+<article class="border border-edge bg-panel p-5 transition-colors hover:border-neon">
+  <a href={href} class="block">
+    <h3 class="font-pixel text-cyan text-sm leading-relaxed">{title}</h3>
+    <p class="font-mono text-dim text-sm mt-3">{summary}</p>
+  </a>
+  <ul class="flex flex-wrap gap-2 mt-4">
+    {tech.map((t) => (
+      <li class="font-mono text-xs text-neon border border-edge px-2 py-1">{t}</li>
+    ))}
+  </ul>
+  {(repo || demo) && (
+    <div class="flex gap-4 mt-4 font-mono text-xs">
+      {repo && <a href={repo} class="text-magenta hover:underline">[ repo ]</a>}
+      {demo && <a href={demo} class="text-cyan hover:underline">[ demo ]</a>}
+    </div>
+  )}
+</article>
