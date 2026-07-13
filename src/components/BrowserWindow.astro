@@ -29,7 +29,7 @@ const { email, github } = Astro.props;
   </div>
   <div class="addrbar">
     <label>Address</label>
-    <div class="path">🌐 http://www.bwubbu.lol/about.html</div>
+    <div class="path"><Icon name="globe" class="favi" stroke={2} /> http://www.bwubbu.lol/about.html</div>
     <span class="go"><i>➜</i>Go</span>
   </div>
   <div class="wbody"><div class="webpage" id="webpage">
@@ -48,7 +48,7 @@ const { email, github } = Astro.props;
         <div class="pbox">
           <h1>~*~ Blub ~*~</h1>
           <div class="pmain">
-            <span class="avatarbig">🐟</span>
+            <span class="avatarbig"><img src="/profile-pic.jpg" alt="Blub" /></span>
             <div>
               developer / builder / MY<br />
               <span class="onlinenow">★ ONLINE NOW!</span><br />
@@ -61,12 +61,12 @@ const { email, github } = Astro.props;
         <div class="pbox">
           <h5>Contacting Blub</h5>
           <div class="contact-grid">
-            <button class="plink" data-err="Friend request sent. It has been pending since 2007.">💌 Add to Friends</button>
-            <button class="plink" data-open="contact">✉️ Send Message</button>
-            <button class="plink" data-err="Away message: brb compiling (since 2019)">💬 Instant Message</button>
-            <button class="plink" data-err="You cannot block Blub. Blub owns this computer.">🚫 Block User</button>
-            <button class="plink" data-err="Added to favorites!! (not really — press ctrl+d)">⭐ Add to Favorites</button>
-            <button class="plink" data-err="Ranked #1. There are no other users on blubspace.">📊 Rank User</button>
+            <button class="plink" data-err="Friend request sent. It has been pending since 2007."><svg class="bi" viewBox="0 0 24 24"><path d="M12 20S4 14.5 4 9.2A3.8 3.8 0 0 1 12 7a3.8 3.8 0 0 1 8 2.2C20 14.5 12 20 12 20Z"></path></svg>Add to Friends</button>
+            <button class="plink" data-open="contact"><svg class="bi" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M4 7l8 6 8-6"></path></svg>Send Message</button>
+            <button class="plink" data-err="Away message: brb compiling (since 2019)"><svg class="bi" viewBox="0 0 24 24"><path d="M4 5h16v10H9l-4 4V5Z"></path></svg>Instant Message</button>
+            <button class="plink" data-err="You cannot block Blub. Blub owns this computer."><svg class="bi" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M6.5 6.5l11 11"></path></svg>Block User</button>
+            <button class="plink" data-err="Added to favorites!! (not really — press ctrl+d)"><svg class="bi" viewBox="0 0 24 24"><path d="M12 3l2.6 5.5 6 .8-4.4 4.2 1.1 6L12 16.9 6.7 19.5l1.1-6L3.4 9.3l6-.8Z"></path></svg>Add to Favorites</button>
+            <button class="plink" data-err="Ranked #1. There are no other users on blubspace."><svg class="bi" viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"></path></svg>Rank User</button>
           </div>
         </div>
         <div class="pbox"><h5>URL</h5><div class="inner">https://bwubbu.lol</div></div>
@@ -89,49 +89,9 @@ const { email, github } = Astro.props;
         <div class="blurb">
           <h4>About me:</h4>
           <div class="inner">developer / builder / tinkerer / human.<br />who you are, what you do — edit me in src/components/BrowserWindow.astro.<br /><br />my rig: Pentium 4 · 512MB RAM · 56k modem (please be patient, images loading)</div>
-          <h4>Who I'd like to meet:</h4>
-          <div class="inner">recruiters, collaborators, fellow tinkerers, and whoever keeps beating my high scores.</div>
-        </div>
-        <div class="blurb">
-          <h4>Blub's Friend Space</h4>
-          <div class="inner">
-            <b>Blub has <span class="fcount">8</span> friends.</b>
-            <div class="top8">
-              <figure><i>🐱</i>the cat</figure>
-              <figure><i>☕</i>coffee</figure>
-              <figure><i>🦆</i>debug duck</figure>
-              <figure><i>📚</i>the docs</figure>
-              <figure><i>👾</i>side project</figure>
-              <figure><i>🌙</i>3am builds</figure>
-              <figure><i>💾</i>ctrl+s</figure>
-              <figure><i>🍜</i>instant noodles</figure>
-            </div>
-            <button class="plink" data-err="That's all of them. That's the whole list.">View All of Blub's Friends</button>
-          </div>
-        </div>
-        <div class="blurb">
-          <h4>Blub's Friends Comments</h4>
-          <div class="inner">
-            <b>Displaying 3 of 4216 comments</b>
-            <div class="cmt"><div class="who"><i>🦆</i>debug duck</div><div class="what"><small>Jun 6 2026 3:04 AM</small><br />quack. (u fixed it the moment u explained it to me. as always.)</div></div>
-            <div class="cmt"><div class="who"><i>🐱</i>the cat</div><div class="what"><small>Jun 2 2026 4:44 PM</small><br />walked on ur keyboard. shipped ur commit. no ragrets ✧</div></div>
-            <div class="cmt"><div class="who"><i>☕</i>coffee</div><div class="what"><small>May 28 2026 8:00 AM</small><br />thanks 4 the add!! see u in 20 minutes lol</div></div>
-          </div>
         </div>
       </div>
     </div>
-    <hr class="rainbow" />
-    <div class="constr"><b>⚠ UNDER CONSTRUCTION ⚠</b></div>
-    <p>you are visitor number: <span class="lcd" id="hits">000000</span></p>
-    <p><a href={`mailto:${email}`}>sign my guestbook</a> · <a href="/">back to desktop</a></p>
-    <p class="webring">[ ← prev | <a href={github} target="_blank" rel="noreferrer">random</a> | next → ] part of the dev webring</p>
-    <div class="badges">
-      <span style="background:#000">MADE WITH NOTEPAD</span>
-      <span style="background:#005a9c">HTML 4.01</span>
-      <span style="background:#7a3f00">56K FRIENDLY</span>
-      <span style="background:#c2187e">GLITTER 4 LIFE</span>
-    </div>
-    <p class="foot">best viewed at 800×600 · est. 2026 · no frames, no shame ✧･ﾟ:*</p>
   </div></div>
-  <div class="statusbar"><span>Done</span><span>🌐 Internet</span></div>
+  <div class="statusbar"><span>Done</span><span><Icon name="globe" class="favi" stroke={2} /> Internet</span></div>
 </XpWindow>
