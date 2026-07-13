@@ -9,10 +9,13 @@ import Taskbar from '../components/Taskbar.astro';
 import StartMenu from '../components/StartMenu.astro';
 import BrowserWindow from '../components/BrowserWindow.astro';
 import ProjectsExplorer from '../components/ProjectsExplorer.astro';
+import ProjectWindow from '../components/ProjectWindow.astro';
 
-// Pull projects at build time, newest first, with their markdown bodies compiled.
+// Pull projects at build time: featured first, then newest, bodies compiled.
 const entries = (await getCollection('projects')).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+  (a, b) =>
+    Number(b.data.featured) - Number(a.data.featured) ||
+    b.data.date.valueOf() - a.data.date.valueOf()
 );
 const projects = await Promise.all(
   entries.map(async (p) => ({ ...p, Content: (await p.render()).Content }))
@@ -77,27 +80,24 @@ const DESKTOP_ICONS = [
     <Blubamp />
 
     <ProjectsExplorer
-      projects={projects.map((p) => ({ slug: p.slug, date: fmt(p.data.date) }))}
+      projects={projects.map((p) => ({ slug: p.slug, date: fmt(p.data.date), featured: p.data.featured }))}
       email={EMAIL}
       github={GITHUB}
     />
 
     <!-- one window per project, markdown rendered inside -->
     {projects.map((p, i) => (
-      <XpWindow id={`proj-${p.slug}`} title={`${p.slug}.md`} style={`left:${26 + i * 4}%;top:${16 + i * 5}%;width:520px`} max>
-        <div class="wbody"><div class="wpad prose">
-          <h1>{p.data.title}</h1>
-          <p class="summary">{p.data.summary}</p>
-          {p.data.tech.length > 0 && <ul class="chips">{p.data.tech.map((t) => <li>{t}</li>)}</ul>}
-          {(p.data.repo || p.data.demo) && (
-            <div class="linkrow">
-              {p.data.repo && <a href={p.data.repo} target="_blank" rel="noreferrer">View repo</a>}
-              {p.data.demo && <a href={p.data.demo} target="_blank" rel="noreferrer">Live demo</a>}
-            </div>
-          )}
-          <p.Content />
-        </div></div>
-      </XpWindow>
+      <ProjectWindow
+        slug={p.slug}
+        title={p.data.title}
+        summary={p.data.summary}
+        tech={p.data.tech}
+        repo={p.data.repo}
+        demo={p.data.demo}
+        embed={p.data.embed}
+        index={i}
+        Content={p.Content}
+      />
     ))}
 
     <BrowserWindow email={EMAIL} github={GITHUB} />

@@ -76,10 +76,12 @@ body.desktop { overflow: hidden; }
   background: var(--client);
   display: none; flex-direction: column; z-index: 10;
 }
+/* user-resizable on the desktop (dialogs stay fixed) — grip at bottom-right */
+.desktop .win:not(.dialog) { overflow: hidden; resize: both; min-width: 300px; min-height: 180px; max-height: calc(100vh - 44px); }
 .win.open { display: flex; animation: openwin .14s ease-out; }
 .win.min { display: none; }
 .win.minning { animation: minwin .18s ease-in forwards; pointer-events: none; }
-.win.maxed { left: 0 !important; top: 0 !important; width: 100vw !important; max-width: none; height: calc(100vh - 30px); border-radius: 0; }
+.desktop .win.maxed { left: 0 !important; top: 0 !important; width: 100vw !important; max-width: none; height: calc(100vh - 30px); max-height: none; resize: none; border-radius: 0; }
 .win.maxed .tbar { border-radius: 0; }
 .win.maxed .wbody { max-height: none; flex: 1; }
 .win:not(.active) { box-shadow: 2px 3px 8px rgba(0,0,0,.3); border-color: #6f8dd9; }
@@ -150,7 +152,7 @@ body.desktop { overflow: hidden; }
   width: 16px; height: 16px; border-radius: 3px; font-style: normal; color: #fff; font-size: 10px;
   display: grid; place-items: center; background: linear-gradient(#8ed36e, #3f9d2f); border: 1px solid #2f7a22;
 }
-.wbody { display: flex; overflow: hidden; max-height: min(58vh, 430px); background: #fff; }
+.wbody { display: flex; overflow: hidden; flex: 1 1 auto; min-height: 0; background: #fff; }
 .wpad { padding: 12px 14px; overflow: auto; -webkit-user-select: text; user-select: text; width: 100%; }
 .statusbar {
   flex: none; display: flex; gap: 2px; padding: 2px 3px; background: var(--client);
@@ -177,11 +179,13 @@ body.desktop { overflow: hidden; }
 /* file list */
 .filelist { flex: 1; padding: 10px; display: flex; flex-wrap: wrap; gap: 2px; align-content: flex-start; overflow: auto; background: #fff; }
 .file {
+  position: relative;
   width: 84px; border: 1px solid transparent; background: none; padding: 5px 2px;
   font-family: var(--font-ui); font-size: 11px; color: #000;
   display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: default;
 }
 .file:focus-visible { border: 1px dotted #333; outline: none; }
+.file .star { position: absolute; top: 2px; right: 12px; color: #f5b301; font-size: 13px; text-shadow: 0 1px 1px rgba(0,0,0,.35); }
 .file svg { width: 34px; height: 34px; }
 .file small { color: #777; }
 .file.sel { background: var(--hl); color: #fff; }

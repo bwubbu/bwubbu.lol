@@ -5,7 +5,7 @@ import XpWindow from './XpWindow.astro';
 import Icon from './Icon.astro';
 
 interface Props {
-  projects: { slug: string; date: string }[];
+  projects: { slug: string; date: string; featured: boolean }[];
   email: string;
   github: string;
 }
@@ -15,7 +15,7 @@ const { projects, email, github } = Astro.props;
 <XpWindow
   id="projects"
   title="My Projects"
-  style="left:16%;top:6%;width:580px"
+  style="left:16%;top:6%;width:580px;height:440px"
   max
   menubar={['File', 'Edit', 'View', 'Favorites', 'Tools', 'Help']}
 >
@@ -50,6 +50,7 @@ const { projects, email, github } = Astro.props;
     <div class="filelist">
       {projects.map((p) => (
         <button class="file" data-open={`proj-${p.slug}`}>
+          {p.featured && <span class="star" title="Featured">★</span>}
           <Icon name="doc" />
           {p.slug}.md<small>{p.date}</small>
         </button>
