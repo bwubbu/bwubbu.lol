@@ -1,0 +1,137 @@
+---
+// about.html in "bwubbu Explorer": browser chrome around the MySpace-style
+// glitter profile. This is the file to edit when personalising the page.
+import XpWindow from './XpWindow.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  email: string;
+  github: string;
+}
+const { email, github } = Astro.props;
+---
+
+<XpWindow
+  id="browser"
+  title="Blub's homepage - bwubbu Explorer"
+  style="left:24%;top:5%;width:740px"
+  max
+  menubar={['File', 'Edit', 'View', 'Favorites', 'Tools', 'Help']}
+>
+  <Icon name="globe" class="ticon" stroke={2} slot="icon" />
+  <div class="toolbar">
+    <button class="tb"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#3f9d2f"></circle><path d="M14.5 7 9 12l5.5 5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Back</button>
+    <button class="tb dis"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#b9c4b6"></circle><path d="M9.5 7 15 12l-5.5 5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+    <div class="tbsep"></div>
+    <button class="tb"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#d63b1f"></circle><path d="M8.5 8.5 15.5 15.5M15.5 8.5 8.5 15.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"></path></svg>Stop</button>
+    <button class="tb"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2-4.9" fill="none" stroke="#3f9d2f" stroke-width="2.4" stroke-linecap="round"></path><path d="M17.5 3v4.5H13" fill="none" stroke="#3f9d2f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>Refresh</button>
+    <button class="tb"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7" fill="none" stroke="#4a7ab5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6 10v9h12v-9" fill="none" stroke="#4a7ab5" stroke-width="2.2" stroke-linejoin="round"></path></svg>Home</button>
+  </div>
+  <div class="addrbar">
+    <label>Address</label>
+    <div class="path">🌐 http://www.bwubbu.lol/about.html</div>
+    <span class="go"><i>➜</i>Go</span>
+  </div>
+  <div class="wbody"><div class="webpage" id="webpage">
+    <span class="spark" style="left:6%;top:15%">✦</span>
+    <span class="spark" style="left:88%;top:12%">✧</span>
+    <span class="spark" style="left:14%;top:48%">✧</span>
+    <span class="spark" style="left:92%;top:42%">✦</span>
+    <span class="spark" style="left:8%;top:78%">★</span>
+    <span class="spark" style="left:85%;top:72%">✦</span>
+    <span class="spark" style="left:48%;top:8%">✧</span>
+    <span class="spark" style="left:55%;top:88%">✦</span>
+    <div class="mshead"><span>blubspace <i>· a place for blubs</i></span><span>Home | Browse | Search | Help</span></div>
+    <div class="marq"><span>✧･ﾟ WELCOME TO Blub's CORNER OF THE WEB ･ﾟ✧ thanks 4 stopping by!!! sign the guestbook or else (◕‿◕✿) ✧･ﾟ pls no hotlinking my glitters ･ﾟ✧</span></div>
+    <div class="profile">
+      <div class="pcol-l">
+        <div class="pbox">
+          <h1>~*~ Blub ~*~</h1>
+          <div class="pmain">
+            <span class="avatarbig">🐟</span>
+            <div>
+              developer / builder / MY<br />
+              <span class="onlinenow">★ ONLINE NOW!</span><br />
+              Last Login: today<br />
+              <small>(bwubbu in-game)</small>
+            </div>
+          </div>
+          <p class="pview">View My: <button class="plink" data-open="projects">Projects</button> | <button class="plink" data-err="pics.zip is still uploading. 56k, please understand.">Pics</button></p>
+        </div>
+        <div class="pbox">
+          <h5>Contacting Blub</h5>
+          <div class="contact-grid">
+            <button class="plink" data-err="Friend request sent. It has been pending since 2007.">💌 Add to Friends</button>
+            <button class="plink" data-open="contact">✉️ Send Message</button>
+            <button class="plink" data-err="Away message: brb compiling (since 2019)">💬 Instant Message</button>
+            <button class="plink" data-err="You cannot block Blub. Blub owns this computer.">🚫 Block User</button>
+            <button class="plink" data-err="Added to favorites!! (not really — press ctrl+d)">⭐ Add to Favorites</button>
+            <button class="plink" data-err="Ranked #1. There are no other users on blubspace.">📊 Rank User</button>
+          </div>
+        </div>
+        <div class="pbox"><h5>URL</h5><div class="inner">https://bwubbu.lol</div></div>
+        <div class="pbox">
+          <h5>Blub's Interests</h5>
+          <table class="ptable">
+            <tr><th>General</th><td>edit me in src/components/BrowserWindow.astro</td></tr>
+            <tr><th>Music</th><td>nightcore remixes of songs that were fine before</td></tr>
+            <tr><th>Games</th><td>ask bwubbu (that's me, in-game)</td></tr>
+            <tr><th>Heroes</th><td>the debug duck (see friend space)</td></tr>
+          </table>
+        </div>
+        <div class="pbox"><h5>Profile Song</h5><div class="inner">♫ nightcore remix (192kbps)<br /><i>autoplay blocked. you're welcome.</i></div></div>
+      </div>
+      <div class="pcol-r">
+        <div class="msbox">
+          <h5>Blub is in your extended network</h5>
+          <div class="inner"><b class="on">● ONLINE NOW</b> — "collecting glitters and shipping side projects ✧"<br />mood: nostalgic (✿◠‿◠)</div>
+        </div>
+        <div class="blurb">
+          <h4>About me:</h4>
+          <div class="inner">developer / builder / tinkerer / human.<br />who you are, what you do — edit me in src/components/BrowserWindow.astro.<br /><br />my rig: Pentium 4 · 512MB RAM · 56k modem (please be patient, images loading)</div>
+          <h4>Who I'd like to meet:</h4>
+          <div class="inner">recruiters, collaborators, fellow tinkerers, and whoever keeps beating my high scores.</div>
+        </div>
+        <div class="blurb">
+          <h4>Blub's Friend Space</h4>
+          <div class="inner">
+            <b>Blub has <span class="fcount">8</span> friends.</b>
+            <div class="top8">
+              <figure><i>🐱</i>the cat</figure>
+              <figure><i>☕</i>coffee</figure>
+              <figure><i>🦆</i>debug duck</figure>
+              <figure><i>📚</i>the docs</figure>
+              <figure><i>👾</i>side project</figure>
+              <figure><i>🌙</i>3am builds</figure>
+              <figure><i>💾</i>ctrl+s</figure>
+              <figure><i>🍜</i>instant noodles</figure>
+            </div>
+            <button class="plink" data-err="That's all of them. That's the whole list.">View All of Blub's Friends</button>
+          </div>
+        </div>
+        <div class="blurb">
+          <h4>Blub's Friends Comments</h4>
+          <div class="inner">
+            <b>Displaying 3 of 4216 comments</b>
+            <div class="cmt"><div class="who"><i>🦆</i>debug duck</div><div class="what"><small>Jun 6 2026 3:04 AM</small><br />quack. (u fixed it the moment u explained it to me. as always.)</div></div>
+            <div class="cmt"><div class="who"><i>🐱</i>the cat</div><div class="what"><small>Jun 2 2026 4:44 PM</small><br />walked on ur keyboard. shipped ur commit. no ragrets ✧</div></div>
+            <div class="cmt"><div class="who"><i>☕</i>coffee</div><div class="what"><small>May 28 2026 8:00 AM</small><br />thanks 4 the add!! see u in 20 minutes lol</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="rainbow" />
+    <div class="constr"><b>⚠ UNDER CONSTRUCTION ⚠</b></div>
+    <p>you are visitor number: <span class="lcd" id="hits">000000</span></p>
+    <p><a href={`mailto:${email}`}>sign my guestbook</a> · <a href="/">back to desktop</a></p>
+    <p class="webring">[ ← prev | <a href={github} target="_blank" rel="noreferrer">random</a> | next → ] part of the dev webring</p>
+    <div class="badges">
+      <span style="background:#000">MADE WITH NOTEPAD</span>
+      <span style="background:#005a9c">HTML 4.01</span>
+      <span style="background:#7a3f00">56K FRIENDLY</span>
+      <span style="background:#c2187e">GLITTER 4 LIFE</span>
+    </div>
+    <p class="foot">best viewed at 800×600 · est. 2026 · no frames, no shame ✧･ﾟ:*</p>
+  </div></div>
+  <div class="statusbar"><span>Done</span><span>🌐 Internet</span></div>
+</XpWindow>

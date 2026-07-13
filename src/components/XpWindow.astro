@@ -1,0 +1,33 @@
+---
+// Window chrome: title bar, caption buttons, optional menu bar.
+// Body content (wbody, toolbars, statusbars) goes in the default slot;
+// a 16px title-bar icon goes in slot="icon".
+interface Props {
+  id: string;
+  title: string;
+  style?: string;
+  min?: boolean;      // show minimise button
+  max?: boolean;      // show maximise button
+  menubar?: string[];
+  dialog?: boolean;   // error-dialog variant
+}
+const { id, title, style, min = true, max = false, menubar = [], dialog = false } = Astro.props;
+---
+
+<section
+  class:list={['win', { dialog }]}
+  id={`win-${id}`}
+  style={style}
+  role={dialog ? 'alertdialog' : undefined}
+  aria-label={title}
+>
+  <header class="tbar">
+    <slot name="icon" />
+    <h2>{title}</h2>
+    {min && <button class="wbtn min-b" data-min aria-label="Minimise">_</button>}
+    {max && <button class="wbtn max-b" data-max aria-label="Maximise">□</button>}
+    <button class="wbtn close-b" data-close aria-label="Close">✕</button>
+  </header>
+  {menubar.length > 0 && <div class="menubar">{menubar.map((m) => <b>{m}</b>)}</div>}
+  <slot />
+</section>

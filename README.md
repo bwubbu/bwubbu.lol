@@ -1,6 +1,6 @@
 # bwubbu.lol
 
-Static portfolio built with Astro, styled as **bwubbuOS xp** — a Windows
+Static portfolio built with Astro, styled as **blubOS xp** — a Windows
 XP-era desktop. Boot screen, Bliss-style wallpaper, draggable windows,
 taskbar, start menu, balloon tips, error-dialog easter eggs.
 
@@ -44,17 +44,44 @@ Frontmatter is type-checked by the schema in `src/content/config.ts`.
 
 ```text
 src/
+  components/   XpWindow (window chrome) · Icon (XP icon set) · Boot ·
+                Blubamp (spotify widget) · Taskbar · StartMenu ·
+                BrowserWindow (the about.html page) · ProjectsExplorer
   content/      projects/*.md  + config.ts (schema)
   layouts/      Base.astro (head + Bliss background)
-  pages/        index.astro    — the whole desktop + windowing script
+  pages/        index.astro    — composes the desktop from components
                 projects/[slug].astro — deep-link page per project
+  scripts/      desktop.ts     — windowing + all desktop behaviour
   styles/       global.css     — the entire XP (Luna) theme
+api/            now-playing.js — Vercel serverless fn for the widget
+scripts/        spotify-token.mjs — one-time Spotify token helper
 public/         favicon.svg
 ```
 
-Things you'll want to personalise, all in `src/pages/index.astro`:
-the `EMAIL` and `GITHUB` constants at the top, the `about.txt` Notepad
-text, and the Recycle Bin easter-egg files.
+Things you'll want to personalise: the `EMAIL` and `GITHUB` constants
+at the top of `src/pages/index.astro`, and everything inside
+`src/components/BrowserWindow.astro` (the profile page content).
+
+## Spotify widget (blubamp)
+
+The desktop has a Winamp-style widget that shows what you're currently
+playing on Spotify (or your last-played track). It's powered by one Vercel
+serverless function, `api/now-playing.js` — the Astro site stays fully
+static. Without configuration (and on `npm run dev`, which doesn't serve
+`api/`), the widget just shows "nothing playing rn".
+
+One-time setup:
+
+1. Create an app at developer.spotify.com/dashboard with redirect URI
+   `http://127.0.0.1:8888/callback`, and note the Client ID and Secret.
+2. Run `node scripts/spotify-token.mjs <client_id> <client_secret>`,
+   open the URL it prints, approve — it prints your refresh token.
+3. In Vercel: Settings -> Environment Variables, add
+   `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`,
+   then redeploy.
+
+The app can stay in Spotify's "development mode" — only your own account
+is read. Never commit the secret or token; they live only in Vercel.
 
 ## Deploy to Vercel
 

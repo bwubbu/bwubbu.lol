@@ -1,0 +1,21 @@
+---
+// Winamp-style Spotify now-playing widget. Polling lives in desktop.ts;
+// data comes from /api/now-playing (Vercel serverless function).
+---
+
+<div class="widget" id="widget" aria-label="Now playing">
+  <div class="tbar"><span>♪ BLUBAMP</span><button class="wbtn" id="wmini" aria-label="Collapse">_</button></div>
+  <div class="wguts">
+    <div class="wrow">
+      <img id="sp-art" alt="" width="44" height="44" style="display:none" />
+      <span class="wart-ph" id="sp-ph">♪</span>
+      <div class="wmeta">
+        <div class="wticker"><span id="sp-title">nothing playing rn</span></div>
+        <div class="wartist" id="sp-artist">(spotify is quiet)</div>
+      </div>
+    </div>
+    <!-- 12 empty bars for the fake spectrum analyser; CSS animates each at a staggered rhythm -->
+    <div class="eq" aria-hidden="true">{Array.from({ length: 12 }).map(() => <i></i>)}</div>
+    <div class="wfoot"><span id="sp-status">· silence ·</span><a id="sp-link" href="/" target="_blank" rel="noreferrer" style="display:none">open ↗</a></div>
+  </div>
+</div>
