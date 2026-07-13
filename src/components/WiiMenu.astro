@@ -1,0 +1,99 @@
+---
+// Wii-Menu-style channel launcher (v1). A full-screen overlay of channel
+// tiles, one per project. Clicking a channel opens that project's existing
+// XP window (desktop.ts handles data-open) and closes the overlay.
+// "Inspired by", not a clone — no Nintendo assets, fonts, or music.
+interface Props {
+  projects: { slug: string; title: string; featured: boolean }[];
+}
+const { projects } = Astro.props;
+
+// Pad with empty channels so the grid reads as a full board even with 1 project.
+const target = Math.max(8, Math.ceil(projects.length / 4) * 4);
+const empties = Array.from({ length: target - projects.length });
+---
+
+<div class="wii overlay" id="wii" aria-hidden="true">
+  <div class="wii-panel">
+    <div class="wii-grid">
+      {projects.map((p) => (
+        <button class="wii-channel" data-open={`proj-${p.slug}`}>
+          <span class="wii-tv">
+            <span class="wii-name">{p.title}</span>
+            {p.featured && <span class="wii-star" title="Featured">★</span>}
+          </span>
+          <span class="wii-cap">{p.slug}.md</span>
+        </button>
+      ))}
+      {empties.map(() => (
+        <span class="wii-channel wii-empty" aria-hidden="true">
+          <span class="wii-tv"></span><span class="wii-cap">&nbsp;</span>
+        </span>
+      ))}
+    </div>
+    <div class="wii-bar">
+      <button class="wii-orb wii-back" data-overlay-close aria-label="Back to desktop">◄</button>
+      <span class="wii-orb wii-disc" aria-hidden="true"></span>
+      <span class="wii-clock" id="wii-clock"></span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .wii {
+    position: fixed; inset: 0; z-index: 5000; display: grid; place-items: center; padding: 24px;
+    background: radial-gradient(120% 90% at 50% 32%, #fdfefe, #e6eef6 60%, #c8d6e3);
+    font-family: "Trebuchet MS", Tahoma, sans-serif;
+    opacity: 0; visibility: hidden; transform: scale(1.03);
+    transition: opacity .28s ease, transform .28s ease, visibility 0s linear .28s;
+  }
+  .wii.on { opacity: 1; visibility: visible; transform: none; transition: opacity .28s ease, transform .28s ease; }
+  .wii-panel { width: min(92vw, 900px); display: flex; flex-direction: column; gap: 22px; }
+
+  .wii-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .wii-channel {
+    display: flex; flex-direction: column; padding: 0; border: 0; background: none; cursor: pointer;
+    border-radius: 12px; overflow: hidden; text-align: center;
+    box-shadow: 0 2px 0 #b9cbe0, 0 6px 14px rgba(40, 90, 150, .18);
+    transition: transform .16s ease, box-shadow .16s ease;
+  }
+  .wii-channel:not(.wii-empty):hover { transform: translateY(-4px); box-shadow: 0 4px 0 #9bb6d6, 0 12px 22px rgba(40, 110, 190, .32); }
+  .wii-channel:not(.wii-empty):active { transform: translateY(-1px); }
+  .wii-channel:focus-visible { outline: 3px solid #57a9ff; outline-offset: 2px; }
+
+  .wii-tv {
+    position: relative; aspect-ratio: 4 / 3; display: grid; place-items: center; padding: 10px;
+    background: linear-gradient(160deg, #eaf4ff, #bcd8f5); border: 2px solid #fff; border-bottom: 0;
+  }
+  .wii-channel:nth-child(4n+2) .wii-tv { background: linear-gradient(160deg, #eafff0, #b7e8c6); }
+  .wii-channel:nth-child(4n+3) .wii-tv { background: linear-gradient(160deg, #fff6e6, #ffe0a8); }
+  .wii-channel:nth-child(4n) .wii-tv   { background: linear-gradient(160deg, #ffeaf5, #ffc4e1); }
+  .wii-name { font-size: 15px; font-weight: bold; color: #1f3b63; text-shadow: 0 1px 0 rgba(255, 255, 255, .7); }
+  .wii-star { position: absolute; top: 6px; right: 8px; color: #f5b301; font-size: 16px; text-shadow: 0 1px 1px rgba(0, 0, 0, .3); }
+  .wii-cap {
+    padding: 5px 8px; font-size: 11px; color: #46617f; background: linear-gradient(#fff, #eaf1f8);
+    border: 2px solid #fff; border-top: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .wii-empty { box-shadow: none; cursor: default; opacity: .55; }
+  .wii-empty .wii-tv { background: repeating-linear-gradient(45deg, #eef3f8 0 10px, #e5edf4 10px 20px); }
+  .wii-empty .wii-cap { background: #eef3f8; }
+
+  .wii-bar {
+    display: flex; align-items: center; gap: 14px; padding: 12px 20px; border-radius: 40px;
+    background: linear-gradient(#eaf4ff, #c3ddf5); border: 1px solid #fff;
+    box-shadow: inset 0 1px 0 #fff, 0 3px 10px rgba(40, 90, 150, .22);
+  }
+  .wii-orb {
+    width: 46px; height: 46px; border-radius: 50%; border: 2px solid #fff; cursor: pointer;
+    background: radial-gradient(circle at 38% 30%, #eaf6ff, #7fb8ef 60%, #2f7ad6);
+    box-shadow: inset 0 -3px 6px rgba(0, 40, 90, .3), 0 2px 5px rgba(0, 50, 100, .25);
+    color: #fff; font-size: 16px; font-weight: bold; display: grid; place-items: center;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .35);
+  }
+  .wii-orb:focus-visible { outline: 3px solid #57a9ff; outline-offset: 2px; }
+  .wii-back:hover { filter: brightness(1.08); }
+  .wii-disc { pointer-events: none; background: radial-gradient(circle at 38% 30%, #fff, #cfd8e2 55%, #9aa8b8); }
+  .wii-clock { margin-left: auto; font-size: 18px; font-weight: bold; color: #2a4d74; letter-spacing: .3px; }
+
+  @media (max-width: 700px) { .wii-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>

@@ -12,6 +12,8 @@ function focusWin(w: HTMLElement) {
   document.querySelectorAll('.taskbtn').forEach((b) => b.classList.toggle('active', b.id === 'task-' + w.id.slice(4)));
 }
 function openWin(id: string) {
+  const overlay = document.getElementById(id);
+  if (overlay?.classList.contains('overlay')) { overlay.classList.add('on'); return; }
   const w = el(id);
   if (!w) return;
   w.classList.remove('min', 'minning');
@@ -145,7 +147,13 @@ document.getElementById('showdesk')!.onclick = () =>
 
 /* clock */
 const clock = document.getElementById('clock')!;
-const tick = () => { clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };
+const wiiClock = document.getElementById('wii-clock');
+const tick = () => {
+  const now = new Date();
+  const t = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  clock.textContent = t;
+  if (wiiClock) wiiClock.textContent = t + '  ·  ' + now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+};
 tick();
 setInterval(tick, 10000);
 
@@ -180,8 +188,29 @@ off.onclick = () => {
 /* balloon */
 balloon.onclick = (e) => {
   balloon.classList.remove('on');
-  if ((e.target as HTMLElement).id !== 'bx') openWin('projects');
+  if ((e.target as HTMLElement).id !== 'bx') openWin('wii');
 };
+
+/* overlays (wii channels, ps2 memory card): back buttons close them */
+document.querySelectorAll<HTMLElement>('.overlay').forEach((ov) => {
+  ov.querySelector('[data-overlay-close]')?.addEventListener('click', () => ov.classList.remove('on'));
+});
+/* wii: launching a channel also closes the menu */
+document.getElementById('wii')?.addEventListener('click', (e) => {
+  if ((e.target as HTMLElement).closest('.wii-channel:not(.wii-empty)')) document.getElementById('wii')!.classList.remove('on');
+});
+/* ps2: selecting a save loads its details + updates the highlighted title */
+const ps2El = document.getElementById('ps2');
+const ps2Title = document.getElementById('ps2-title');
+ps2El?.querySelectorAll<HTMLElement>('.ps2-save').forEach((save) => {
+  save.addEventListener('click', () => {
+    ps2El.querySelectorAll('.ps2-save').forEach((s) => s.classList.remove('sel'));
+    save.classList.add('sel');
+    const k = save.dataset.save;
+    ps2El.querySelectorAll<HTMLElement>('.ps2-detail').forEach((d) => d.classList.toggle('show', d.dataset.save === k));
+    if (ps2Title && save.dataset.title) ps2Title.textContent = save.dataset.title;
+  });
+});
 
 /* send mail */
 document.getElementById('send')!.onclick = () => {
