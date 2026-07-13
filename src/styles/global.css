@@ -34,24 +34,13 @@ body.desktop { overflow: hidden; }
   border: 1px solid #98b0ec; border-radius: 2px;
 }
 
-/* ================= Bliss ================= */
+/* ================= Frutiger Aero sky (all pages) ================= */
+/* Wallpaper.astro layers bokeh + bubbles + hill over this on the desktop. */
 .bliss {
   background: linear-gradient(to bottom,
-    #2258c4 0%, #3a70d4 22%, #5c94e3 40%, #8ab8ec 54%, #b9d8f2 62%,
-    #dcedf8 67%, #f2f9fc 69.5%, #c2ddf0 70%);
+    #1258b8 0%, #2b86d4 26%, #4aa8e2 46%, #78cfe6 64%, #a9e6dd 80%, #c9f0c0 100%);
 }
 .scene { position: fixed; inset: 0 0 30px 0; overflow: hidden; }
-.clouds { position: absolute; inset: 0 0 32% 0; pointer-events: none;
-  background:
-    radial-gradient(42% 13% at 18% 30%, rgba(255,255,255,.9), transparent 70%),
-    radial-gradient(30% 10% at 55% 18%, rgba(255,255,255,.65), transparent 70%),
-    radial-gradient(50% 14% at 84% 42%, rgba(255,255,255,.8), transparent 70%),
-    radial-gradient(28% 8% at 38% 52%, rgba(255,255,255,.55), transparent 70%),
-    radial-gradient(60% 12% at 60% 64%, rgba(255,255,255,.5), transparent 70%);
-  filter: blur(7px);
-}
-.hill { position: absolute; inset: auto 0 0 0; height: 42%; }
-.hill svg { width: 100%; height: 100%; display: block; }
 
 /* ================= desktop icons ================= */
 .icons { position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; gap: 10px; z-index: 5; }

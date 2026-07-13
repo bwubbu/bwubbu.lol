@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import XpWindow from '../components/XpWindow.astro';
 import Icon from '../components/Icon.astro';
 import Boot from '../components/Boot.astro';
+import Wallpaper from '../components/Wallpaper.astro';
 import Blubamp from '../components/Blubamp.astro';
 import Taskbar from '../components/Taskbar.astro';
 import StartMenu from '../components/StartMenu.astro';
@@ -48,22 +49,7 @@ const DESKTOP_ICONS = [
   </div>
 
   <div class="scene" id="scene">
-    <div class="clouds"></div>
-    <div class="hill">
-      <svg viewBox="0 0 1200 300" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#a8d23e"></stop><stop offset=".25" stop-color="#7cb92f"></stop>
-            <stop offset=".6" stop-color="#4d8f22"></stop><stop offset="1" stop-color="#2f671a"></stop>
-          </linearGradient>
-          <linearGradient id="grass2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#8cbf35"></stop><stop offset="1" stop-color="#3d7a1e"></stop>
-          </linearGradient>
-        </defs>
-        <path d="M0,150 Q250,30 560,90 T1200,40 V300 H0 Z" fill="url(#grass2)" opacity=".85"></path>
-        <path d="M0,190 Q320,70 700,140 T1200,120 V300 H0 Z" fill="url(#grass)"></path>
-      </svg>
-    </div>
+    <Wallpaper />
 
     <nav class="icons" aria-label="Desktop">
       {DESKTOP_ICONS.map((i) => (

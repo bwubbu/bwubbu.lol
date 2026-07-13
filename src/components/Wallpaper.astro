@@ -1,0 +1,74 @@
+---
+// Frutiger Aero desktop wallpaper: soft bokeh glow, floating glass bubbles,
+// and a glossy green hill. Pure CSS/SVG — no image assets, so it's
+// royalty-free by construction. The sky gradient itself lives on `.bliss`
+// (body, in global.css); this component layers the atmosphere on top.
+---
+
+<div class="aero" aria-hidden="true">
+  <div class="aero-glow"></div>
+  <div class="aero-bubbles">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+  <div class="aero-hill">
+    <svg viewBox="0 0 1200 300" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="aeroGrass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#c2ee5c"></stop><stop offset=".28" stop-color="#7fca2e"></stop>
+          <stop offset=".62" stop-color="#3f9a20"></stop><stop offset="1" stop-color="#236410"></stop>
+        </linearGradient>
+        <linearGradient id="aeroGrass2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#a6df48"></stop><stop offset="1" stop-color="#357a1c"></stop>
+        </linearGradient>
+      </defs>
+      <path d="M0,150 Q250,30 560,90 T1200,40 V300 H0 Z" fill="url(#aeroGrass2)" opacity=".85"></path>
+      <path d="M0,190 Q320,70 700,140 T1200,120 V300 H0 Z" fill="url(#aeroGrass)"></path>
+      <path d="M0,190 Q320,70 700,140 T1200,120" fill="none" stroke="#eaffb0" stroke-width="4" opacity=".55"></path>
+    </svg>
+  </div>
+</div>
+
+<style>
+  .aero { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+
+  /* soft glossy light — the Aero sheen */
+  .aero-glow {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(38% 30% at 22% 24%, rgba(255, 255, 255, .5), transparent 70%),
+      radial-gradient(30% 24% at 80% 18%, rgba(190, 240, 255, .45), transparent 70%),
+      radial-gradient(52% 36% at 60% 58%, rgba(255, 255, 255, .28), transparent 72%);
+    filter: blur(10px);
+  }
+
+  /* floating glass bubbles */
+  .aero-bubbles span {
+    position: absolute; border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 26%, rgba(255, 255, 255, .95), rgba(255, 255, 255, .22) 38%, rgba(255, 255, 255, 0) 62%),
+      radial-gradient(circle at 68% 78%, rgba(150, 225, 255, .5), rgba(150, 225, 255, 0) 60%);
+    border: 1px solid rgba(255, 255, 255, .4);
+    box-shadow: inset 0 1px 6px rgba(255, 255, 255, .7), inset 0 -4px 10px rgba(30, 120, 190, .25), 0 3px 10px rgba(0, 50, 90, .15);
+    animation: aero-float linear infinite;
+  }
+  .aero-bubbles span:nth-child(1) { left: 7%;  width: 74px; height: 74px; bottom: -100px; animation-duration: 27s; animation-delay: -3s; }
+  .aero-bubbles span:nth-child(2) { left: 21%; width: 34px; height: 34px; bottom: -60px;  animation-duration: 19s; animation-delay: -11s; }
+  .aero-bubbles span:nth-child(3) { left: 34%; width: 54px; height: 54px; bottom: -80px;  animation-duration: 23s; animation-delay: -7s; }
+  .aero-bubbles span:nth-child(4) { left: 47%; width: 26px; height: 26px; bottom: -50px;  animation-duration: 16s; animation-delay: -2s; }
+  .aero-bubbles span:nth-child(5) { left: 58%; width: 88px; height: 88px; bottom: -120px; animation-duration: 31s; animation-delay: -14s; }
+  .aero-bubbles span:nth-child(6) { left: 69%; width: 40px; height: 40px; bottom: -66px;  animation-duration: 21s; animation-delay: -5s; }
+  .aero-bubbles span:nth-child(7) { left: 80%; width: 60px; height: 60px; bottom: -88px;  animation-duration: 25s; animation-delay: -18s; }
+  .aero-bubbles span:nth-child(8) { left: 90%; width: 30px; height: 30px; bottom: -54px;  animation-duration: 18s; animation-delay: -9s; }
+  .aero-bubbles span:nth-child(9) { left: 14%; width: 46px; height: 46px; bottom: -72px;  animation-duration: 29s; animation-delay: -22s; }
+  @keyframes aero-float {
+    0%   { transform: translate(0, 0) scale(1);      opacity: 0; }
+    12%  { opacity: .85; }
+    50%  { transform: translate(14px, -46vh) scale(1.05); opacity: .9; }
+    88%  { opacity: .55; }
+    100% { transform: translate(-8px, -92vh) scale(1.12); opacity: 0; }
+  }
+
+  .aero-hill { position: absolute; inset: auto 0 0 0; height: 42%; }
+  .aero-hill svg { width: 100%; height: 100%; display: block; }
+</style>
