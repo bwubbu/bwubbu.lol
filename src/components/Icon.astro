@@ -2,7 +2,7 @@
 // Shared XP-style icons, hand-drawn SVG. Size comes from the context
 // (.dicon svg, .file svg, .ticon, .smitem svg); pass class through.
 interface Props {
-  name: 'folder' | 'doc' | 'globe' | 'mail' | 'bin';
+  name: 'folder' | 'doc' | 'globe' | 'mail' | 'bin' | 'card' | 'wiimote';
   class?: string;
   stroke?: number; // bump to 2 for small (16-26px) renderings
 }
@@ -20,6 +20,12 @@ const { name, class: cls, stroke = 1.5 } = Astro.props;
 )}
 {name === 'mail' && (
   <svg class={cls} viewBox="0 0 42 42"><rect x="4" y="9" width="34" height="24" rx="2" fill="#f4f8ff" stroke="#8a97ad" stroke-width={stroke}></rect><path d="M5 11 21 24 37 11" fill="none" stroke="#5a8ef0" stroke-width="2"></path><path d="M5 31 15 21M37 31 27 21" stroke="#c3cfe2" stroke-width={stroke}></path></svg>
+)}
+{name === 'wiimote' && (
+  <svg class={cls} viewBox="0 0 42 42"><rect x="14" y="2.5" width="14" height="37" rx="5.5" fill="#f4f6fa" stroke="#a7b0be" stroke-width={stroke}></rect><circle cx="17.4" cy="6.4" r="1.2" fill="#4aa3ff"></circle><rect x="17.6" y="10.9" width="6.8" height="2.2" rx="0.6" fill="#4a5261"></rect><rect x="19.9" y="8.6" width="2.2" height="6.8" rx="0.6" fill="#4a5261"></rect><circle cx="21" cy="20" r="3.4" fill="#dfe4ec" stroke="#a7b0be" stroke-width="1"></circle><circle cx="17.6" cy="25.6" r="0.9" fill="#8a93a3"></circle><circle cx="21" cy="25.6" r="0.9" fill="#8a93a3"></circle><circle cx="24.4" cy="25.6" r="0.9" fill="#8a93a3"></circle><circle cx="21" cy="30.4" r="1.7" fill="#dfe4ec" stroke="#a7b0be" stroke-width="1"></circle><circle cx="21" cy="34.8" r="1.7" fill="#dfe4ec" stroke="#a7b0be" stroke-width="1"></circle></svg>
+)}
+{name === 'card' && (
+  <svg class={cls} viewBox="0 0 42 42"><rect x="9" y="6" width="24" height="30" rx="3" fill="#2a3a8a" stroke="#141d52" stroke-width={stroke}></rect><rect x="13" y="10" width="16" height="9" rx="1.5" fill="#8fa8e8"></rect><rect x="14" y="24" width="14" height="2.6" rx="1.3" fill="#c9d6f5"></rect><rect x="14" y="29" width="14" height="2.6" rx="1.3" fill="#c9d6f5"></rect></svg>
 )}
 {name === 'bin' && (
   <svg class={cls} viewBox="0 0 42 42"><path d="M10 13 h22 l-2.5 24 q-.3 3-3 3 H15.5 q-2.7 0-3-3 Z" fill="#dfeefc" opacity=".85" stroke="#7a93b5" stroke-width={stroke}></path><ellipse cx="21" cy="13" rx="12" ry="3.4" fill="#c9dff5" stroke="#7a93b5" stroke-width={stroke}></ellipse><path d="M15 18l1.4 17M21 18v17M27 18l-1.4 17" stroke="#9cb8d8" stroke-width={stroke}></path></svg>

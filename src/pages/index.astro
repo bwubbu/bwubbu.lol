@@ -8,8 +8,9 @@ import Blubamp from '../components/Blubamp.astro';
 import Taskbar from '../components/Taskbar.astro';
 import StartMenu from '../components/StartMenu.astro';
 import BrowserWindow from '../components/BrowserWindow.astro';
-import ProjectsExplorer from '../components/ProjectsExplorer.astro';
 import ProjectWindow from '../components/ProjectWindow.astro';
+import WiiMenu from '../components/WiiMenu.astro';
+import PS2Experience from '../components/PS2Experience.astro';
 
 // Pull projects at build time: featured first, then newest, bodies compiled.
 const entries = (await getCollection('projects')).sort(
@@ -20,14 +21,13 @@ const entries = (await getCollection('projects')).sort(
 const projects = await Promise.all(
   entries.map(async (p) => ({ ...p, Content: (await p.render()).Content }))
 );
-const fmt = (d: Date) =>
-  d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 
 const EMAIL = 'hello@bwubbu.lol';
 const GITHUB = 'https://github.com/bwubbu';
 
 const DESKTOP_ICONS = [
-  { open: 'projects', icon: 'folder', label: 'My Projects' },
+  { open: 'wii', icon: 'wiimote', label: 'My Projects' },
+  { open: 'ps2', icon: 'card', label: 'Experience' },
   { open: 'browser', icon: 'globe', label: 'about.html' },
   { open: 'contact', icon: 'mail', label: 'Contact Me' },
   { open: 'trash', icon: 'bin', label: 'Recycle Bin' },
@@ -78,12 +78,6 @@ const DESKTOP_ICONS = [
     </nav>
 
     <Blubamp />
-
-    <ProjectsExplorer
-      projects={projects.map((p) => ({ slug: p.slug, date: fmt(p.data.date), featured: p.data.featured }))}
-      email={EMAIL}
-      github={GITHUB}
-    />
 
     <!-- one window per project, markdown rendered inside -->
     {projects.map((p, i) => (
@@ -141,6 +135,9 @@ const DESKTOP_ICONS = [
     <b><span class="bi">i</span> Welcome to blubOS <span class="bx" id="bx">✕</span></b>
     New portfolio detected. Double-click <u>My Projects</u> to have a look around.
   </div>
+
+  <WiiMenu projects={projects.map((p) => ({ slug: p.slug, title: p.data.title, featured: p.data.featured }))} />
+  <PS2Experience />
 
   <StartMenu email={EMAIL} github={GITHUB} />
   <Taskbar />
