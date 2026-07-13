@@ -79,7 +79,7 @@ body.desktop { overflow: hidden; }
 .win.open { display: flex; animation: openwin .14s ease-out; }
 .win.min { display: none; }
 .win.minning { animation: minwin .18s ease-in forwards; pointer-events: none; }
-.win.maxed { left: 0 !important; top: 0 !important; width: 100vw; max-width: none; height: calc(100vh - 30px); border-radius: 0; }
+.win.maxed { left: 0 !important; top: 0 !important; width: 100vw !important; max-width: none; height: calc(100vh - 30px); border-radius: 0; }
 .win.maxed .tbar { border-radius: 0; }
 .win.maxed .wbody { max-height: none; flex: 1; }
 .win:not(.active) { box-shadow: 2px 3px 8px rgba(0,0,0,.3); border-color: #6f8dd9; }
@@ -436,124 +436,136 @@ body.desktop { overflow: hidden; }
 .offbox footer { background: linear-gradient(to bottom, #0e60cb, #1868ce); padding: 8px 12px; display: flex; justify-content: flex-end; }
 
 /* ================= browser window: 2000s homepage ================= */
+/* ---- kawaiicore: soft pastel candy palette on a light polka-dot page ---- */
 .webpage {
   width: 100%; overflow: auto; padding: 0 0 18px; position: relative;
   -webkit-user-select: text; user-select: text;
   text-align: center; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive;
-  font-size: 12px; color: #ffd9f2;
-  background-color: #2a0f38;
+  font-size: 12px; color: #9c3f7d;
+  background-color: #fff0f8;
   background-image:
-    radial-gradient(#ff8ad833 1.5px, transparent 1.5px),
-    radial-gradient(#c17bff2e 1px, transparent 1px);
+    radial-gradient(#ffc7e6 2px, transparent 2px),
+    radial-gradient(#d9c2ff 1.5px, transparent 1.5px);
   background-size: 26px 26px, 17px 17px;
   background-position: 0 0, 9px 13px;
 }
-.marq { background: #000; color: #ff8ad8; font-family: "Lucida Console", Menlo, monospace; font-size: 12px; overflow: hidden; white-space: nowrap; padding: 3px 0; }
+.marq { background: linear-gradient(90deg, #ffd0ec, #e6d4ff); color: #c72f8f; font-family: "Lucida Console", Menlo, monospace; font-size: 12px; overflow: hidden; white-space: nowrap; padding: 3px 0; }
 .marq span { display: inline-block; padding-left: 100%; animation: marq 14s linear infinite; }
 @keyframes marq { to { transform: translateX(-200%); } }
 .webpage h1 {
   font-size: 27px; margin: 14px 0 2px;
-  background: linear-gradient(90deg, #ff8ad8, #fff6fb 25%, #c17bff 50%, #fff6fb 75%, #ff8ad8);
+  background: linear-gradient(90deg, #ff5fb0, #ff9ed6 25%, #b774ff 50%, #ff9ed6 75%, #ff5fb0);
   background-size: 300% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: glit 2.5s linear infinite;
-  filter: drop-shadow(0 0 5px #ff5fc180);
+  filter: drop-shadow(0 1px 1px #fff) drop-shadow(0 0 5px #ff9ed6);
 }
 @keyframes glit { to { background-position: -300% 0; } }
-/* twinkling sparkle field + cursor trail */
+/* twinkling sparkle field + cursor trail — darker so they read on the pastel bg */
 .spark, .trail {
-  position: absolute; pointer-events: none; color: #ffb7ec;
-  text-shadow: 0 0 6px #ff8ad8, 0 0 12px #c17bff;
+  position: absolute; pointer-events: none; color: #ff7ac2;
+  text-shadow: 0 0 5px #ff9ed6, 0 0 10px #d9b8ff;
 }
 .spark { animation: twinkle 1.8s ease-in-out infinite; }
-.spark:nth-child(2n) { animation-delay: .6s; color: #d9b7ff; }
+.spark:nth-child(2n) { animation-delay: .6s; color: #b98cff; }
 .spark:nth-child(3n) { animation-delay: 1.1s; font-size: 9px; }
 @keyframes twinkle { 0%, 100% { opacity: .15; transform: scale(.6); } 50% { opacity: 1; transform: scale(1.25); } }
 .trail { animation: trailfade .7s ease-out forwards; z-index: 3; }
 @keyframes trailfade { from { opacity: 1; transform: scale(.6) rotate(0); } to { opacity: 0; transform: scale(1.7) rotate(80deg) translateY(-12px); } }
-.webpage .blink { animation: blinker 1s steps(1) infinite; color: #f00; font-weight: bold; }
+.webpage .blink { animation: blinker 1s steps(1) infinite; color: #ff3ea0; font-weight: bold; }
 @keyframes blinker { 50% { opacity: 0; } }
-hr.rainbow { border: 0; height: 4px; margin: 12px 10%; background: linear-gradient(90deg, #e40303, #ff8c00, #ffd700, #008026, #24408e, #732982); }
-/* MySpace-style profile layout: blue left column, orange right column,
-   deliberately clashing with the glitter theme — that clash IS the look */
+hr.rainbow { border: 0; height: 4px; margin: 12px 10%; border-radius: 4px; background: linear-gradient(90deg, #ff9ed6, #ffd6a5, #fff3a8, #b7e6c8, #bfe3ff, #d9b8ff); }
+/* MySpace-style profile layout, recoloured pastel: pink header, candy columns */
 .mshead {
   display: flex; justify-content: space-between; align-items: baseline;
-  background: linear-gradient(#2e59a8, #1d3c78); color: #fff;
+  background: linear-gradient(#ff9ed6, #c98cff); color: #fff;
   padding: 5px 10px; font-family: Verdana, sans-serif; font-size: 12px; font-weight: bold; text-align: left;
+  text-shadow: 0 1px 1px #b85fa8;
 }
-.mshead i, .mshead span:last-child { font-weight: normal; font-style: normal; font-size: 10px; color: #bcd0f5; }
+.mshead i, .mshead span:last-child { font-weight: normal; font-style: normal; font-size: 10px; color: #ffe7f6; }
 .profile { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; text-align: left; align-items: flex-start; }
 .pcol-l { flex: 0 0 232px; min-width: 206px; display: flex; flex-direction: column; gap: 8px; }
 .pcol-r { flex: 1; min-width: 250px; }
-.pbox { background: #fff; border: 1px solid #6699cc; font-size: 11px; color: #333; }
-.pbox h5 { background: linear-gradient(#b8d4f2, #8ab4e8); color: #16386e; font-size: 11px; padding: 3px 8px; }
+.pbox { background: #fff; border: 2px solid #a9d8ff; border-radius: 10px; overflow: hidden; font-size: 11px; color: #444; }
+.pbox h5 { background: linear-gradient(#bfe3ff, #9fd0ff); color: #235b8e; font-size: 11px; padding: 3px 8px; }
 .pbox .inner { padding: 6px 8px; }
 .pbox h1 { font-size: 20px; margin: 6px 0 2px; text-align: center; }
 .pview { padding: 0 8px 6px; margin: 0; }
 .pcol-r > .msbox { width: 100%; margin: 0 0 8px; }
-.fcount { color: #c00; }
+.fcount { color: #ff3ea0; }
 .webring { font-size: 11px; }
 .pmain { display: flex; gap: 8px; padding: 4px 8px 6px; align-items: center; }
 .avatarbig {
-  display: grid; place-items: center; width: 82px; height: 82px; font-size: 40px; flex: none;
-  border: 2px outset #ffd2ef; background: linear-gradient(135deg, #ffe3f6, #e6ccff);
+  display: grid; place-items: center; width: 82px; height: 82px; flex: none;
+  font-family: "Lucida Console", Menlo, monospace; font-size: 18px; font-weight: bold; color: #b0468f;
+  border: 3px solid #ffb3df; border-radius: 14px; background: linear-gradient(135deg, #ffe3f6, #e6ccff); overflow: hidden;
 }
-.onlinenow { color: #ff7a00; font-weight: bold; }
+.avatarbig img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.onlinenow { color: #ff6fb5; font-weight: bold; }
 .plink {
+  display: inline-flex; align-items: center; gap: 4px;
   background: none; border: 0; padding: 1px 2px; font-family: inherit; font-size: 11px;
-  color: #0044cc; cursor: default; text-decoration: underline; text-align: left;
+  color: #4a86d8; cursor: default; text-decoration: underline; text-align: left;
 }
 .plink:hover { color: #ff5fc1; }
+/* pink line-icons on contact buttons; globe favicon in browser chrome */
+.bi { width: 13px; height: 13px; flex: none; fill: none; stroke: #ff5fb0; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.favi { width: 14px; height: 14px; vertical-align: -3px; }
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; padding: 5px 6px; gap: 1px; }
 .ptable { width: 100%; border-collapse: separate; border-spacing: 2px; }
-.ptable th { background: #b1d0f0; color: #16386e; width: 34%; padding: 4px 6px; text-align: left; vertical-align: top; font-size: 10px; }
-.ptable td { background: #d5e8fb; padding: 4px 6px; font-size: 11px; }
-.blurb { background: #fff; border: 1px solid #ff9933; font-size: 11px; color: #333; margin-bottom: 8px; }
-.blurb h4 { background: linear-gradient(#ffb763, #ff9933); color: #fff; font-size: 12px; padding: 3px 8px; }
+.ptable th { background: #d9c2ff; color: #5b3a8a; width: 34%; padding: 4px 6px; text-align: left; vertical-align: top; font-size: 10px; }
+.ptable td { background: #f1e8ff; padding: 4px 6px; font-size: 11px; }
+.blurb { background: #fff; border: 2px solid #a9e6c4; border-radius: 10px; overflow: hidden; font-size: 11px; color: #444; margin-bottom: 8px; }
+.blurb h4 { background: linear-gradient(#bff0d6, #8fe0b3); color: #1f6b45; font-size: 12px; padding: 3px 8px; }
+.blurb h4::before { content: "♡ "; }
 .blurb .inner { padding: 7px 9px; }
-.cmt { display: flex; border: 1px solid #ffcc99; margin-top: 6px; }
-.cmt .who { flex: none; width: 92px; background: #ffcc99; padding: 6px 4px; text-align: center; font-weight: bold; font-size: 10px; color: #7a3f00; }
+.cmt { display: flex; border: 1px solid #ffd3ea; border-radius: 8px; overflow: hidden; margin-top: 6px; }
+.cmt .who { flex: none; width: 92px; background: #ffd9ee; padding: 6px 4px; text-align: center; font-weight: bold; font-size: 10px; color: #a33f7d; }
 .cmt .who i {
   display: grid; place-items: center; width: 44px; height: 44px; margin: 0 auto 3px;
-  font-style: normal; font-size: 22px; background: #fff; border: 1px solid #e8a35c;
+  font-family: "Lucida Console", Menlo, monospace; font-style: normal; font-size: 12px; font-weight: bold; color: #b0468f;
+  background: #fff; border: 2px solid #ffb3df; border-radius: 10px;
 }
 .cmt .what { padding: 6px 8px; }
-.cmt .what small { color: #999; }
+.cmt .what small { color: #b98fb0; }
 /* MySpace-style profile boxes */
 .msbox {
   width: min(92%, 460px); margin: 12px auto; text-align: left;
-  background: #fff; border: 1px solid #ff9ee0; font-size: 11px; color: #333;
+  background: #fff; border: 2px solid #ffb3df; border-radius: 10px; overflow: hidden; font-size: 11px; color: #444;
 }
 .msbox h5 {
-  background: linear-gradient(#ff9ee0, #ff5fc1); color: #fff;
-  font-size: 12px; padding: 3px 9px; letter-spacing: .3px;
+  background: linear-gradient(#ff9ed6, #ff6fb5); color: #fff;
+  font-size: 12px; padding: 3px 9px; letter-spacing: .3px; text-shadow: 0 1px 1px #d64f9e;
 }
+.msbox h5::before { content: "✿ "; }
 .msbox .inner { padding: 8px 10px; }
 .msbox .inner b.on { color: #2fbf2f; }
 .top8 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px; }
 .top8 figure { margin: 0; font-size: 10px; color: #c2187e; }
 .top8 i {
   display: grid; place-items: center; width: 46px; height: 46px; margin: 0 auto 2px;
-  font-style: normal; font-size: 22px; border: 2px outset #ffd2ef;
+  font-family: "Lucida Console", Menlo, monospace; font-style: normal; font-size: 12px; font-weight: bold; color: #b0468f;
+  border: 3px solid #ffb3df; border-radius: 12px;
   background: linear-gradient(135deg, #ffe3f6, #e6ccff);
 }
 .constr {
-  margin: 14px auto; width: 260px; padding: 5px 0; font-weight: bold; letter-spacing: 1px; color: #000;
-  background: repeating-linear-gradient(45deg, #f7c700 0 14px, #000 14px 28px);
+  margin: 14px auto; width: 260px; padding: 5px 0; font-weight: bold; letter-spacing: 1px; color: #a33f7d;
+  border-radius: 6px; overflow: hidden;
+  background: repeating-linear-gradient(45deg, #ffd0ec 0 14px, #fff 14px 28px);
 }
-.constr b { background: #f7c700; padding: 1px 8px; }
+.constr b { background: #ff9ed6; color: #fff; padding: 1px 8px; }
 .lcd {
-  font-family: "Lucida Console", Menlo, monospace; background: #000; color: #0f0;
-  padding: 2px 7px; letter-spacing: 3px; border: 2px inset #888; font-size: 13px;
+  font-family: "Lucida Console", Menlo, monospace; background: #3a1030; color: #ffd0f4;
+  padding: 2px 7px; letter-spacing: 3px; border: 2px solid #ff9ed6; border-radius: 4px; font-size: 13px;
 }
 .badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
 .badges span {
   display: inline-block; width: 88px; padding: 4px 0; font-size: 9px; font-weight: bold;
-  font-family: Verdana, sans-serif; border: 2px outset #ddd; color: #fff;
+  font-family: Verdana, sans-serif; border: 2px solid #fff; border-radius: 8px; color: #fff;
 }
-.webpage a { color: #ff9ee0; }
-.webpage a:visited { color: #c99ff5; }
-.webpage .foot { font-size: 10px; color: #b98fd4; margin-top: 12px; }
+.webpage a { color: #ff5fb0; }
+.webpage a:visited { color: #b06fff; }
+.webpage .foot { font-size: 10px; color: #b06fa8; margin-top: 12px; }
 
 /* ================= blubamp: spotify now-playing widget ================= */
 .widget {
