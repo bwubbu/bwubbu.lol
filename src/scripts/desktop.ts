@@ -148,11 +148,14 @@ document.getElementById('showdesk')!.onclick = () =>
 /* clock */
 const clock = document.getElementById('clock')!;
 const wiiClock = document.getElementById('wii-clock');
+const wiiDate = document.getElementById('wii-date');
 const tick = () => {
   const now = new Date();
-  const t = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  clock.textContent = t;
-  if (wiiClock) wiiClock.textContent = t + '  ·  ' + now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  clock.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  // wii clock: 12h time with small AM/PM, blinking colon, weekday d/m date — like the real menu
+  if (wiiClock) wiiClock.innerHTML =
+    `${now.getHours() % 12 || 12}<b>:</b>${String(now.getMinutes()).padStart(2, '0')}<span>${now.getHours() < 12 ? 'AM' : 'PM'}</span>`;
+  if (wiiDate) wiiDate.textContent = `${now.toLocaleDateString('en-GB', { weekday: 'short' })} ${now.getDate()}/${now.getMonth() + 1}`;
 };
 tick();
 setInterval(tick, 10000);
@@ -195,21 +198,56 @@ balloon.onclick = (e) => {
 document.querySelectorAll<HTMLElement>('.overlay').forEach((ov) => {
   ov.querySelector('[data-overlay-close]')?.addEventListener('click', () => ov.classList.remove('on'));
 });
-/* wii: launching a channel also closes the menu */
-document.getElementById('wii')?.addEventListener('click', (e) => {
-  if ((e.target as HTMLElement).closest('.wii-channel:not(.wii-empty)')) document.getElementById('wii')!.classList.remove('on');
-});
-/* ps2: selecting a save loads its details + updates the highlighted title */
+/* wii: clicking a channel zooms into its banner page (FLIP: start the
+   fullscreen page at the tile's rect, then release it to fill the screen).
+   The banner holds the whole project; "Wii Menu" zooms back out. */
+const wiiEl = document.getElementById('wii');
+const wiiZoom = document.getElementById('wii-zoom');
+if (wiiEl && wiiZoom) {
+  const tileRect = (ch: HTMLElement) => {
+    const r = ch.getBoundingClientRect();
+    return `translate(${r.left}px, ${r.top}px) scale(${r.width / innerWidth}, ${r.height / innerHeight})`;
+  };
+  let lastChannel: HTMLElement | null = null;
+  wiiEl.addEventListener('click', (e) => {
+    const t = e.target as HTMLElement;
+    const ch = t.closest('.wii-channel[data-zoom]') as HTMLElement | null;
+    if (ch) {
+      lastChannel = ch;
+      wiiZoom.querySelectorAll<HTMLElement>('.wii-page').forEach((p) => p.classList.toggle('show', p.dataset.slug === ch.dataset.zoom));
+      wiiZoom.style.transformOrigin = '0 0';
+      wiiZoom.style.transition = 'none';
+      wiiZoom.style.transform = tileRect(ch);
+      void wiiZoom.offsetWidth; // flush so the zoom animates from the tile
+      wiiZoom.style.transition = '';
+      wiiEl.classList.add('zoomed');
+      wiiZoom.style.transform = 'none';
+    }
+    if (t.closest('[data-wii-back]')) {
+      if (lastChannel) wiiZoom.style.transform = tileRect(lastChannel);
+      wiiEl.classList.remove('zoomed');
+    }
+  });
+}
+/* ps2: selecting a save loads it — big model left, details right.
+   ◯ Back returns to the grid first, then exits to the desktop. */
 const ps2El = document.getElementById('ps2');
 const ps2Title = document.getElementById('ps2-title');
 ps2El?.querySelectorAll<HTMLElement>('.ps2-save').forEach((save) => {
   save.addEventListener('click', () => {
-    ps2El.querySelectorAll('.ps2-save').forEach((s) => s.classList.remove('sel'));
-    save.classList.add('sel');
     const k = save.dataset.save;
-    ps2El.querySelectorAll<HTMLElement>('.ps2-detail').forEach((d) => d.classList.toggle('show', d.dataset.save === k));
+    ps2El.querySelectorAll<HTMLElement>('.ps2-view').forEach((v) => v.classList.toggle('show', v.dataset.save === k));
+    ps2El.classList.add('viewing');
     if (ps2Title && save.dataset.title) ps2Title.textContent = save.dataset.title;
   });
+});
+document.getElementById('ps2-back')?.addEventListener('click', () => {
+  if (ps2El!.classList.contains('viewing')) {
+    ps2El!.classList.remove('viewing');
+    if (ps2Title) ps2Title.textContent = 'Select a data file';
+  } else {
+    ps2El!.classList.remove('on');
+  }
 });
 
 /* send mail */
@@ -269,6 +307,41 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
     webpage.appendChild(s);
     setTimeout(() => s.remove(), 700);
   });
+}
+
+/* friend space: real github followers; the built-in weirdos stay if this fails */
+const top8 = document.getElementById('top8');
+if (top8?.dataset.user) {
+  const gh = (path: string) => fetch(`https://api.github.com/users/${top8.dataset.user}${path}`).then((r) => (r.ok ? r.json() : Promise.reject()));
+  Promise.all([gh(''), gh('/followers?per_page=8')])
+    .then(([user, followers]: [{ followers: number }, { login: string; avatar_url: string; html_url: string }[]]) => {
+      if (!followers.length) return;
+      document.getElementById('fcount')!.textContent = String(user.followers);
+      top8.innerHTML = followers.map((u) =>
+        `<figure><figcaption>${u.login}</figcaption><a href="${u.html_url}" target="_blank" rel="noreferrer"><img src="${u.avatar_url}&s=144" alt="${u.login}" loading="lazy"></a></figure>`
+      ).join('');
+    })
+    .catch(() => {});
+}
+
+/* friends comments: a github issue is the guestbook; fallback quacks stay if it fails */
+const cmts = document.getElementById('cmts');
+if (cmts?.dataset.issue) {
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+  const issueApi = `https://api.github.com/repos/${cmts.dataset.repo}/issues/${cmts.dataset.issue}`;
+  const j = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Promise.reject()));
+  Promise.all([j(issueApi), j(`${issueApi}/comments?per_page=10`)])
+    .then(([issue, comments]: [{ comments: number }, { body: string; created_at: string; user: { login: string; avatar_url: string; html_url: string } }[]]) => {
+      if (!comments.length) return;
+      document.getElementById('cmt-shown')!.textContent = String(comments.length);
+      document.getElementById('cmt-total')!.textContent = String(issue.comments);
+      cmts.innerHTML = comments.map((c) => {
+        const body = c.body.length > 300 ? c.body.slice(0, 300) + '…' : c.body;
+        const date = new Date(c.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        return `<tr><td class="who">${c.user.login}<br><a href="${c.user.html_url}" target="_blank" rel="noreferrer"><img src="${c.user.avatar_url}&s=120" alt=""></a></td><td class="what"><b>${date}</b><br><br>${esc(body)}</td></tr>`;
+      }).join('');
+    })
+    .catch(() => {});
 }
 
 /* hit counter — counts this visitor's own visits, like the real thing never did */

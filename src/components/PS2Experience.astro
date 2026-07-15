@@ -46,19 +46,18 @@ const EXPERIENCES = [
     ],
   },
 ];
-const first = EXPERIENCES[0];
 ---
 
 <div class="ps2 overlay" id="ps2" aria-hidden="true">
   <div class="ps2-frame">
     <div class="ps2-top">
       <div class="ps2-mc">Memory Card&nbsp;<span>(PS2)</span>&nbsp;/ 1<br /><small>8128 KB Free · Experience</small></div>
-      <div class="ps2-title" id="ps2-title">{first.company} — {first.role}</div>
+      <div class="ps2-title" id="ps2-title">Select a data file</div>
     </div>
 
     <div class="ps2-grid" role="listbox" aria-label="Experience saves">
-      {EXPERIENCES.map((e, i) => (
-        <button class:list={['ps2-save', { sel: i === 0 }]} data-save={e.key} data-title={`${e.company} — ${e.role}`}>
+      {EXPERIENCES.map((e) => (
+        <button class="ps2-save" data-save={e.key} data-title={`${e.company} — ${e.role}`}>
           <span class="ps2-icon">
             <span class="ps2-cube-3d">
               <span>{e.badge}</span><span>{e.badge}</span><span>{e.badge}</span>
@@ -70,20 +69,32 @@ const first = EXPERIENCES[0];
       ))}
     </div>
 
-    <div class="ps2-details">
-      {EXPERIENCES.map((e, i) => (
-        <div class:list={['ps2-detail', { show: i === 0 }]} data-save={e.key}>
-          <p class="ps2-meta">{e.sub} · {e.date}</p>
-          <p class="ps2-note">{e.note}</p>
-          <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>
+    <!-- "loaded save" views: enlarged spinning model left, details right -->
+    <div class="ps2-views">
+      {EXPERIENCES.map((e) => (
+        <div class="ps2-view" data-save={e.key}>
+          <div class="ps2-model">
+            <span class="ps2-icon">
+              <span class="ps2-cube-3d">
+                <span>{e.badge}</span><span>{e.badge}</span><span>{e.badge}</span>
+                <span>{e.badge}</span><span>{e.badge}</span><span>{e.badge}</span>
+              </span>
+            </span>
+            <span class="ps2-cap">{e.company}</span>
+          </div>
+          <div class="ps2-detail">
+            <p class="ps2-meta">{e.sub} · {e.date}</p>
+            <p class="ps2-note">{e.note}</p>
+            <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
         </div>
       ))}
     </div>
 
     <div class="ps2-legend">
-      <button class="ps2-leg" data-overlay-close><b class="pb-o">◯</b> Back</button>
       <span class="ps2-leg"><b class="pb-x">✕</b> Enter</span>
       <span class="ps2-leg"><b class="pb-t">△</b> Options</span>
+      <button class="ps2-leg" id="ps2-back"><b class="pb-o">◯</b> Back</button>
     </div>
   </div>
 </div>
@@ -91,8 +102,8 @@ const first = EXPERIENCES[0];
 <style>
   .ps2 {
     position: fixed; inset: 0; z-index: 5000; display: grid; place-items: center; padding: 24px;
-    background: radial-gradient(68% 58% at 40% 38%, #c2c4b6 0%, #999b8f 42%, #74766c 76%, #565850 100%);
-    font-family: "Trebuchet MS", Tahoma, sans-serif; color: #f2f4ee;
+    background: radial-gradient(70% 60% at 40% 36%, #6a6c62 0%, #4a4c44 45%, #2f302a 75%, #171815 100%);
+    font-family: "Play", "Trebuchet MS", Tahoma, sans-serif; color: #f2f4ee;
     opacity: 0; visibility: hidden; transform: scale(1.03);
     transition: opacity .3s ease, transform .3s ease, visibility 0s linear .3s;
   }
@@ -104,19 +115,22 @@ const first = EXPERIENCES[0];
   .ps2-mc span { color: #dfe0d6; font-weight: normal; font-size: 15px; }
   .ps2-mc small { font-size: 11px; font-weight: normal; color: #e6e7dd; }
   .ps2-title {
-    text-align: right; font-size: 20px; font-weight: bold; color: #f3e64d; max-width: 55%;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, .55);
+    text-align: right; font-size: 20px; font-weight: bold; color: #fff; max-width: 55%;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .65);
   }
 
   /* grid of spinning 3D save "models" */
   .ps2-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  /* each save sits in a translucent glass tile, like the real save grid */
   .ps2-save {
     display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 6px 8px;
-    background: none; border: 1px solid transparent; border-radius: 8px; cursor: pointer; color: #f4f5ef;
+    background: linear-gradient(rgba(255, 255, 255, .14), rgba(255, 255, 255, .05));
+    border: 1px solid rgba(255, 255, 255, .3); border-radius: 10px; cursor: pointer; color: #f4f5ef;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 4px 10px rgba(0, 0, 0, .35);
+    backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
     transition: background .12s ease, border-color .12s ease;
   }
-  .ps2-save:hover { background: rgba(255, 255, 255, .12); }
-  .ps2-save.sel { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .6); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35); }
+  .ps2-save:hover { background: linear-gradient(rgba(255, 255, 255, .24), rgba(255, 255, 255, .1)); border-color: rgba(255, 255, 255, .7); }
   .ps2-save:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
   .ps2-cap { font-size: 11px; font-weight: bold; text-shadow: 0 1px 2px rgba(0, 0, 0, .55); }
 
@@ -134,24 +148,46 @@ const first = EXPERIENCES[0];
   .ps2-cube-3d span:nth-child(5) { transform: rotateX(90deg) translateZ(25px); }
   .ps2-cube-3d span:nth-child(6) { transform: rotateX(-90deg) translateZ(25px); }
   /* each save's "model" a different colour, like different game icons */
-  .ps2-save:nth-child(1) .ps2-cube-3d span { background: linear-gradient(135deg, #8fb0f0, #2f52c0); }
-  .ps2-save:nth-child(2) .ps2-cube-3d span { background: linear-gradient(135deg, #7fd8c0, #1f8f7a); }
-  .ps2-save:nth-child(3) .ps2-cube-3d span { background: linear-gradient(135deg, #d9a0f0, #8a3fb0); }
-  .ps2-save:nth-child(4) .ps2-cube-3d span { background: linear-gradient(135deg, #f0c878, #c98a2a); }
+  .ps2-save:nth-child(1) .ps2-cube-3d span, .ps2-view:nth-child(1) .ps2-cube-3d span { background: linear-gradient(135deg, #8fb0f0, #2f52c0); }
+  .ps2-save:nth-child(2) .ps2-cube-3d span, .ps2-view:nth-child(2) .ps2-cube-3d span { background: linear-gradient(135deg, #7fd8c0, #1f8f7a); }
+  .ps2-save:nth-child(3) .ps2-cube-3d span, .ps2-view:nth-child(3) .ps2-cube-3d span { background: linear-gradient(135deg, #d9a0f0, #8a3fb0); }
+  .ps2-save:nth-child(4) .ps2-cube-3d span, .ps2-view:nth-child(4) .ps2-cube-3d span { background: linear-gradient(135deg, #f0c878, #c98a2a); }
   @keyframes ps2spin { to { transform: rotateX(360deg) rotateY(360deg); } }
 
-  .ps2-details {
-    min-height: 150px; padding: 14px 18px; border-radius: 8px; overflow: auto;
+  /* browsing vs viewing: the grid gives way to the loaded save */
+  .ps2.viewing .ps2-grid { display: none; }
+  .ps2-views { display: none; }
+  .ps2.viewing .ps2-views { display: block; min-height: 260px; }
+  .ps2-view { display: none; }
+  .ps2-view.show { display: flex; align-items: flex-start; gap: 22px; }
+
+  .ps2-model {
+    display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 18px 10px;
+    animation: ps2grow .3s ease;
+  }
+  @keyframes ps2grow { from { transform: scale(.45); opacity: .4; } }
+  .ps2-model .ps2-icon { height: auto; perspective: 900px; padding: 22px 16px; }
+  .ps2-model .ps2-cube-3d { width: 100px; height: 100px; }
+  .ps2-model .ps2-cube-3d span { font-size: 27px; }
+  .ps2-model .ps2-cube-3d span:nth-child(1) { transform: translateZ(50px); }
+  .ps2-model .ps2-cube-3d span:nth-child(2) { transform: rotateY(180deg) translateZ(50px); }
+  .ps2-model .ps2-cube-3d span:nth-child(3) { transform: rotateY(90deg) translateZ(50px); }
+  .ps2-model .ps2-cube-3d span:nth-child(4) { transform: rotateY(-90deg) translateZ(50px); }
+  .ps2-model .ps2-cube-3d span:nth-child(5) { transform: rotateX(90deg) translateZ(50px); }
+  .ps2-model .ps2-cube-3d span:nth-child(6) { transform: rotateX(-90deg) translateZ(50px); }
+  .ps2-model .ps2-cap { font-size: 13px; }
+
+  .ps2-detail {
+    flex: 1; min-height: 220px; padding: 14px 18px; border-radius: 8px; overflow: auto;
     background: rgba(20, 22, 18, .5); border: 1px solid rgba(255, 255, 255, .22);
     backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    animation: ps2fade .24s ease;
   }
-  .ps2-detail { display: none; }
-  .ps2-detail.show { display: block; animation: ps2fade .24s ease; }
-  @keyframes ps2fade { from { opacity: 0; transform: translateY(6px); } }
+  @keyframes ps2fade { from { opacity: 0; transform: translateX(10px); } }
   .ps2-meta { font-size: 11px; color: #d7d9cd; }
   .ps2-note { font-size: 12px; color: #f3e64d; font-style: italic; margin: 3px 0 9px; }
-  .ps2-details ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
-  .ps2-details li { font-size: 12.5px; line-height: 1.5; color: #f0f1ea; }
+  .ps2-detail ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+  .ps2-detail li { font-size: 12.5px; line-height: 1.5; color: #f0f1ea; }
 
   .ps2-legend { display: flex; justify-content: center; gap: 26px; padding-top: 2px; }
   .ps2-leg { background: none; border: 0; cursor: default; font-size: 13px; color: #f2f4ee; text-shadow: 0 1px 2px rgba(0, 0, 0, .5); display: inline-flex; align-items: center; gap: 6px; }
@@ -162,5 +198,10 @@ const first = EXPERIENCES[0];
   .pb-x { color: #7fb0ff; font-size: 15px; }
   .pb-t { color: #74e08a; font-size: 15px; }
 
-  @media (max-width: 640px) { .ps2-grid { grid-template-columns: repeat(2, 1fr); } .ps2-title { font-size: 15px; } }
+  @media (max-width: 640px) {
+    .ps2-grid { grid-template-columns: repeat(2, 1fr); }
+    .ps2-title { font-size: 15px; }
+    .ps2-view.show { flex-direction: column; align-items: center; }
+    .ps2-detail { width: 100%; }
+  }
 </style>
