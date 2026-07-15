@@ -8,7 +8,6 @@ import Blubamp from '../components/Blubamp.astro';
 import Taskbar from '../components/Taskbar.astro';
 import StartMenu from '../components/StartMenu.astro';
 import BrowserWindow from '../components/BrowserWindow.astro';
-import ProjectWindow from '../components/ProjectWindow.astro';
 import WiiMenu from '../components/WiiMenu.astro';
 import PS2Experience from '../components/PS2Experience.astro';
 
@@ -79,21 +78,6 @@ const DESKTOP_ICONS = [
 
     <Blubamp />
 
-    <!-- one window per project, markdown rendered inside -->
-    {projects.map((p, i) => (
-      <ProjectWindow
-        slug={p.slug}
-        title={p.data.title}
-        summary={p.data.summary}
-        tech={p.data.tech}
-        repo={p.data.repo}
-        demo={p.data.demo}
-        embed={p.data.embed}
-        index={i}
-        Content={p.Content}
-      />
-    ))}
-
     <BrowserWindow email={EMAIL} github={GITHUB} />
 
     <XpWindow id="contact" title="New Message" style="left:24%;top:32%" menubar={['File', 'Edit', 'Insert', 'Format', 'Help']}>
@@ -136,7 +120,7 @@ const DESKTOP_ICONS = [
     New portfolio detected. Double-click <u>My Projects</u> to have a look around.
   </div>
 
-  <WiiMenu projects={projects.map((p) => ({ slug: p.slug, title: p.data.title, featured: p.data.featured }))} />
+  <WiiMenu projects={projects.map((p) => ({ slug: p.slug, ...p.data, Content: p.Content }))} />
   <PS2Experience />
 
   <StartMenu email={EMAIL} github={GITHUB} />
