@@ -1,0 +1,207 @@
+---
+// PS2 "Memory Card" experience app, styled after the real memory-card BROWSER:
+// grey/olive gradient, a grid of spinning 3D "save" models (one per job), the
+// free-space readout top-left, the highlighted title in yellow top-right, and
+// the ✕/◯/△ button legend. "Inspired by", not a clone — no Sony assets.
+const EXPERIENCES = [
+  {
+    key: 'ryt', badge: 'RB', company: 'Ryt Bank', sub: 'YTL Digital Bank Berhad',
+    role: 'Frontend Engineering Intern', date: 'Mar 2026 – Sep 2026',
+    note: "Malaysia's first AI-powered digital bank",
+    bullets: [
+      'Built the Groups split-payment feature end-to-end within a cross-functional product pod, shipping a core payments flow used at scale.',
+      'Shipped on a 2-week Agile cadence, working directly with designers, PMs, and engineers in a fast-moving startup environment.',
+      "Reviewed teammates' pull requests, flagging edge cases and suggesting cleaner implementations.",
+      'Owned testing and iteration on core flows, tightening reliability and UX ahead of release.',
+    ],
+  },
+  {
+    key: 'cynex', badge: 'CX', company: 'CyNex Labs', sub: 'IoT research & innovation lab, Universiti Malaya',
+    role: 'Laboratory Assistant', date: 'Oct 2025 – Feb 2026',
+    note: 'Research lab supporting IoT projects',
+    bullets: [
+      'Maintained 100% equipment uptime across 30–50 devices (Raspberry Pi, ESP32, 3D printers) for active student research.',
+      'Maintained and deployed SmartGrow, a student-built IoT plant-management system, through active development.',
+      'Ran regular equipment audits, keeping hardware inventory accurate and research-ready.',
+    ],
+  },
+  {
+    key: 'necopy', badge: 'NA', company: 'Necopy Art', sub: 'Artist merchandise & e-commerce platform',
+    role: 'Freelance Web Developer', date: 'Feb 2025 – Sep 2025',
+    note: 'Artist-focused e-commerce',
+    bullets: [
+      "Led system design and full build of the company's e-commerce platform, from Figma wireframes to a live Next.js site on Vercel.",
+      'Drove a 62% increase in sales post-launch with a fast, conversion-focused storefront.',
+      'Owned ongoing maintenance and performance tuning, keeping the site fast and stable.',
+    ],
+  },
+  {
+    key: 'visionone', badge: 'V1', company: 'Vision One Sdn. Bhd.', sub: 'Oil & gas engineering services',
+    role: 'Contract Web Developer', date: 'Jun 2024 – Aug 2024',
+    note: 'Technical solutions for the energy sector',
+    bullets: [
+      'Engineered and deployed a production web app in PHP/Laravel, from stakeholder requirements to a live product.',
+      'Worked directly with stakeholders to scope requirements and translate them into a working solution.',
+      'Delivered on schedule within a contract engagement, handing off a production-ready system.',
+    ],
+  },
+];
+---
+
+<div class="ps2 overlay" id="ps2" aria-hidden="true">
+  <div class="ps2-frame">
+    <div class="ps2-top">
+      <div class="ps2-mc">Memory Card&nbsp;<span>(PS2)</span>&nbsp;/ 1<br /><small>8128 KB Free · Experience</small></div>
+      <div class="ps2-title" id="ps2-title">Select a data file</div>
+    </div>
+
+    <div class="ps2-grid" role="listbox" aria-label="Experience saves">
+      {EXPERIENCES.map((e) => (
+        <button class="ps2-save" data-save={e.key} data-title={`${e.company} — ${e.role}`}>
+          <span class="ps2-icon">
+            <span class="ps2-cube-3d">
+              <span>{e.badge}</span><span>{e.badge}</span><span>{e.badge}</span>
+              <span>{e.badge}</span><span>{e.badge}</span><span>{e.badge}</span>
+            </span>
+          </span>
+          <span class="ps2-cap">{e.company}</span>
+        </button>
+      ))}
+    </div>
+
+    <!-- "loaded save" views: enlarged spinning model left, details right -->
+    <div class="ps2-views">
+      {EXPERIENCES.map((e) => (
+        <div class="ps2-view" data-save={e.key}>
+          <div class="ps2-model">
+            <span class="ps2-icon">
+              <span class="ps2-cube-3d">
+                <span>{e.badge}</span><span>{e.badge}</span><span>{e.badge}</span>
+                <span>{e.badge}</span><span>{e.badge}</span><span>{e.badge}</span>
+              </span>
+            </span>
+            <span class="ps2-cap">{e.company}</span>
+          </div>
+          <div class="ps2-detail">
+            <p class="ps2-meta">{e.sub} · {e.date}</p>
+            <p class="ps2-note">{e.note}</p>
+            <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="ps2-legend">
+      <span class="ps2-leg"><b class="pb-x">✕</b> Enter</span>
+      <span class="ps2-leg"><b class="pb-t">△</b> Options</span>
+      <button class="ps2-leg" id="ps2-back"><b class="pb-o">◯</b> Back</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ps2 {
+    position: fixed; inset: 0; z-index: 5000; display: grid; place-items: center; padding: 24px;
+    background: radial-gradient(70% 60% at 40% 36%, #6a6c62 0%, #4a4c44 45%, #2f302a 75%, #171815 100%);
+    font-family: "Play", "Trebuchet MS", Tahoma, sans-serif; color: #f2f4ee;
+    opacity: 0; visibility: hidden; transform: scale(1.03);
+    transition: opacity .3s ease, transform .3s ease, visibility 0s linear .3s;
+  }
+  .ps2.on { opacity: 1; visibility: visible; transform: none; transition: opacity .3s ease, transform .3s ease; }
+
+  .ps2-frame { width: min(94vw, 860px); display: flex; flex-direction: column; gap: 14px; }
+  .ps2-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .ps2-mc { font-size: 19px; font-weight: bold; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .5); line-height: 1.3; }
+  .ps2-mc span { color: #dfe0d6; font-weight: normal; font-size: 15px; }
+  .ps2-mc small { font-size: 11px; font-weight: normal; color: #e6e7dd; }
+  .ps2-title {
+    text-align: right; font-size: 20px; font-weight: bold; color: #fff; max-width: 55%;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .65);
+  }
+
+  /* grid of spinning 3D save "models" */
+  .ps2-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  /* each save sits in a translucent glass tile, like the real save grid */
+  .ps2-save {
+    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 6px 8px;
+    background: linear-gradient(rgba(255, 255, 255, .14), rgba(255, 255, 255, .05));
+    border: 1px solid rgba(255, 255, 255, .3); border-radius: 10px; cursor: pointer; color: #f4f5ef;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 4px 10px rgba(0, 0, 0, .35);
+    backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+    transition: background .12s ease, border-color .12s ease;
+  }
+  .ps2-save:hover { background: linear-gradient(rgba(255, 255, 255, .24), rgba(255, 255, 255, .1)); border-color: rgba(255, 255, 255, .7); }
+  .ps2-save:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+  .ps2-cap { font-size: 11px; font-weight: bold; text-shadow: 0 1px 2px rgba(0, 0, 0, .55); }
+
+  .ps2-icon { height: 92px; display: grid; place-items: center; perspective: 560px; }
+  .ps2-cube-3d { position: relative; width: 50px; height: 50px; transform-style: preserve-3d; animation: ps2spin 13s linear infinite; }
+  .ps2-cube-3d span {
+    position: absolute; inset: 0; display: grid; place-items: center; font-size: 14px; font-weight: bold; color: #fff;
+    border: 1px solid rgba(255, 255, 255, .55); box-shadow: inset 0 0 12px rgba(255, 255, 255, .3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .5); backface-visibility: visible;
+  }
+  .ps2-cube-3d span:nth-child(1) { transform: translateZ(25px); }
+  .ps2-cube-3d span:nth-child(2) { transform: rotateY(180deg) translateZ(25px); }
+  .ps2-cube-3d span:nth-child(3) { transform: rotateY(90deg) translateZ(25px); }
+  .ps2-cube-3d span:nth-child(4) { transform: rotateY(-90deg) translateZ(25px); }
+  .ps2-cube-3d span:nth-child(5) { transform: rotateX(90deg) translateZ(25px); }
+  .ps2-cube-3d span:nth-child(6) { transform: rotateX(-90deg) translateZ(25px); }
+  /* each save's "model" a different colour, like different game icons */
+  .ps2-save:nth-child(1) .ps2-cube-3d span, .ps2-view:nth-child(1) .ps2-cube-3d span { background: linear-gradient(135deg, #8fb0f0, #2f52c0); }
+  .ps2-save:nth-child(2) .ps2-cube-3d span, .ps2-view:nth-child(2) .ps2-cube-3d span { background: linear-gradient(135deg, #7fd8c0, #1f8f7a); }
+  .ps2-save:nth-child(3) .ps2-cube-3d span, .ps2-view:nth-child(3) .ps2-cube-3d span { background: linear-gradient(135deg, #d9a0f0, #8a3fb0); }
+  .ps2-save:nth-child(4) .ps2-cube-3d span, .ps2-view:nth-child(4) .ps2-cube-3d span { background: linear-gradient(135deg, #f0c878, #c98a2a); }
+  @keyframes ps2spin { to { transform: rotateX(360deg) rotateY(360deg); } }
+
+  /* browsing vs viewing: the grid gives way to the loaded save */
+  .ps2.viewing .ps2-grid { display: none; }
+  .ps2-views { display: none; }
+  .ps2.viewing .ps2-views { display: block; min-height: 260px; }
+  .ps2-view { display: none; }
+  .ps2-view.show { display: flex; align-items: flex-start; gap: 22px; }
+
+  .ps2-model {
+    display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 18px 10px;
+    animation: ps2grow .3s ease;
+  }
+  @keyframes ps2grow { from { transform: scale(.45); opacity: .4; } }
+  .ps2-model .ps2-icon { height: auto; perspective: 900px; padding: 22px 16px; }
+  .ps2-model .ps2-cube-3d { width: 100px; height: 100px; }
+  .ps2-model .ps2-cube-3d span { font-size: 27px; }
+  .ps2-model .ps2-cube-3d span:nth-child(1) { transform: translateZ(50px); }
+  .ps2-model .ps2-cube-3d span:nth-child(2) { transform: rotateY(180deg) translateZ(50px); }
+  .ps2-model .ps2-cube-3d span:nth-child(3) { transform: rotateY(90deg) translateZ(50px); }
+  .ps2-model .ps2-cube-3d span:nth-child(4) { transform: rotateY(-90deg) translateZ(50px); }
+  .ps2-model .ps2-cube-3d span:nth-child(5) { transform: rotateX(90deg) translateZ(50px); }
+  .ps2-model .ps2-cube-3d span:nth-child(6) { transform: rotateX(-90deg) translateZ(50px); }
+  .ps2-model .ps2-cap { font-size: 13px; }
+
+  .ps2-detail {
+    flex: 1; min-height: 220px; padding: 14px 18px; border-radius: 8px; overflow: auto;
+    background: rgba(20, 22, 18, .5); border: 1px solid rgba(255, 255, 255, .22);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    animation: ps2fade .24s ease;
+  }
+  @keyframes ps2fade { from { opacity: 0; transform: translateX(10px); } }
+  .ps2-meta { font-size: 11px; color: #d7d9cd; }
+  .ps2-note { font-size: 12px; color: #f3e64d; font-style: italic; margin: 3px 0 9px; }
+  .ps2-detail ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+  .ps2-detail li { font-size: 12.5px; line-height: 1.5; color: #f0f1ea; }
+
+  .ps2-legend { display: flex; justify-content: center; gap: 26px; padding-top: 2px; }
+  .ps2-leg { background: none; border: 0; cursor: default; font-size: 13px; color: #f2f4ee; text-shadow: 0 1px 2px rgba(0, 0, 0, .5); display: inline-flex; align-items: center; gap: 6px; }
+  .ps2-legend button.ps2-leg { cursor: pointer; }
+  .ps2-legend button.ps2-leg:hover { text-decoration: underline; }
+  .ps2-leg:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .pb-o { color: #ff6b6b; font-size: 15px; }
+  .pb-x { color: #7fb0ff; font-size: 15px; }
+  .pb-t { color: #74e08a; font-size: 15px; }
+
+  @media (max-width: 640px) {
+    .ps2-grid { grid-template-columns: repeat(2, 1fr); }
+    .ps2-title { font-size: 15px; }
+    .ps2-view.show { flex-direction: column; align-items: center; }
+    .ps2-detail { width: 100%; }
+  }
+</style>

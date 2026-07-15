@@ -14,7 +14,7 @@ const { email, github } = Astro.props;
 <XpWindow
   id="browser"
   title="Blub's homepage - bwubbu Explorer"
-  style="left:24%;top:5%;width:740px"
+  style="left:24%;top:5%;width:740px;height:520px"
   max
   menubar={['File', 'Edit', 'View', 'Favorites', 'Tools', 'Help']}
 >
@@ -29,109 +29,118 @@ const { email, github } = Astro.props;
   </div>
   <div class="addrbar">
     <label>Address</label>
-    <div class="path">🌐 http://www.bwubbu.lol/about.html</div>
+    <div class="path"><Icon name="globe" class="favi" stroke={2} /> http://www.bwubbu.lol/about.html</div>
     <span class="go"><i>➜</i>Go</span>
   </div>
   <div class="wbody"><div class="webpage" id="webpage">
-    <span class="spark" style="left:6%;top:15%">✦</span>
-    <span class="spark" style="left:88%;top:12%">✧</span>
-    <span class="spark" style="left:14%;top:48%">✧</span>
-    <span class="spark" style="left:92%;top:42%">✦</span>
-    <span class="spark" style="left:8%;top:78%">★</span>
-    <span class="spark" style="left:85%;top:72%">✦</span>
-    <span class="spark" style="left:48%;top:8%">✧</span>
-    <span class="spark" style="left:55%;top:88%">✦</span>
-    <div class="mshead"><span>blubspace <i>· a place for blubs</i></span><span>Home | Browse | Search | Help</span></div>
-    <div class="marq"><span>✧･ﾟ WELCOME TO Blub's CORNER OF THE WEB ･ﾟ✧ thanks 4 stopping by!!! sign the guestbook or else (◕‿◕✿) ✧･ﾟ pls no hotlinking my glitters ･ﾟ✧</span></div>
+    <div class="mshead">
+      <span class="mslogo">blubspace.com</span>
+      <span class="mssearch">Search: <i class="msinput"></i> <b class="msgo">Go</b></span>
+      <span class="mslinks">Help | SignUp</span>
+    </div>
+    <div class="msnav">Home | Browse | Search | Invite | Film | Mail | Blog | Favorites | Forum | Groups | Events | Videos | Music | Classifieds</div>
     <div class="profile">
       <div class="pcol-l">
-        <div class="pbox">
-          <h1>~*~ Blub ~*~</h1>
-          <div class="pmain">
-            <span class="avatarbig">🐟</span>
-            <div>
-              developer / builder / MY<br />
-              <span class="onlinenow">★ ONLINE NOW!</span><br />
-              Last Login: today<br />
-              <small>(bwubbu in-game)</small>
-            </div>
+        <h1 class="pname">Blub</h1>
+        <div class="pmain">
+          <span class="avatarbig"><img src="/profile-pic.jpg" alt="Blub" /></span>
+          <div>
+            "shipping side projects"<br /><br />
+            Blub<br />
+            Kuala Lumpur, MALAYSIA<br />
+            <span class="onlinenow">ONLINE NOW!</span><br />
+            Last Login: today
           </div>
-          <p class="pview">View My: <button class="plink" data-open="projects">Projects</button> | <button class="plink" data-err="pics.zip is still uploading. 56k, please understand.">Pics</button></p>
         </div>
+        <p class="pview">View My: <button class="plink" data-open="wii">Projects</button> | <button class="plink" data-err="pics.zip is still uploading. 56k, please understand.">Pics</button></p>
+
         <div class="pbox">
           <h5>Contacting Blub</h5>
           <div class="contact-grid">
-            <button class="plink" data-err="Friend request sent. It has been pending since 2007.">💌 Add to Friends</button>
-            <button class="plink" data-open="contact">✉️ Send Message</button>
-            <button class="plink" data-err="Away message: brb compiling (since 2019)">💬 Instant Message</button>
-            <button class="plink" data-err="You cannot block Blub. Blub owns this computer.">🚫 Block User</button>
-            <button class="plink" data-err="Added to favorites!! (not really — press ctrl+d)">⭐ Add to Favorites</button>
-            <button class="plink" data-err="Ranked #1. There are no other users on blubspace.">📊 Rank User</button>
+            <button class="plink" data-open="contact"><svg class="bi" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M4 7l8 6 8-6"></path></svg>Send Message</button>
+            <button class="plink" data-err="This profile is already being forwarded to you."><svg class="bi" viewBox="0 0 24 24"><path d="M4 12h12M12 6l6 6-6 6"></path></svg>Forward to Friend</button>
+            <button class="plink" data-err="Friend request sent. It has been pending since 2007."><svg class="bi" viewBox="0 0 24 24"><path d="M12 20S4 14.5 4 9.2A3.8 3.8 0 0 1 12 7a3.8 3.8 0 0 1 8 2.2C20 14.5 12 20 12 20Z"></path></svg>Add to Friends</button>
+            <button class="plink" data-err="Added to favorites!! (not really — press ctrl+d)"><svg class="bi" viewBox="0 0 24 24"><path d="M12 3l2.6 5.5 6 .8-4.4 4.2 1.1 6L12 16.9 6.7 19.5l1.1-6L3.4 9.3l6-.8Z"></path></svg>Add to Favorites</button>
+            <button class="plink" data-err="Away message: brb compiling (since 2019)"><svg class="bi" viewBox="0 0 24 24"><path d="M4 5h16v10H9l-4 4V5Z"></path></svg>Instant Message</button>
+            <button class="plink" data-err="You cannot block Blub. Blub owns this computer."><svg class="bi" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M6.5 6.5l11 11"></path></svg>Block User</button>
+            <button class="plink" data-err="There are no groups on blubspace. It is a very exclusive network."><svg class="bi" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"></circle><circle cx="16" cy="10" r="2.5"></circle><path d="M4 19c0-3 2.4-5 5-5s5 2 5 5M14 16.5c.6-1.5 2-2.5 3.5-2.5 2 0 3.5 1.6 3.5 4"></path></svg>Add to Group</button>
+            <button class="plink" data-err="Ranked #1. There are no other users on blubspace."><svg class="bi" viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"></path></svg>Rank User</button>
           </div>
         </div>
-        <div class="pbox"><h5>URL</h5><div class="inner">https://bwubbu.lol</div></div>
-        <div class="pbox">
-          <h5>Blub's Interests</h5>
-          <table class="ptable">
-            <tr><th>General</th><td>edit me in src/components/BrowserWindow.astro</td></tr>
-            <tr><th>Music</th><td>nightcore remixes of songs that were fine before</td></tr>
-            <tr><th>Games</th><td>ask bwubbu (that's me, in-game)</td></tr>
-            <tr><th>Heroes</th><td>the debug duck (see friend space)</td></tr>
+
+        <div class="pbox"><h5>blubspace URL:</h5><div class="inner"><a href="https://bwubbu.lol">https://bwubbu.lol</a></div></div>
+
+        <table class="ptable">
+          <tr><th class="thead" colspan="2">Blub's Details</th></tr>
+          <tr><th>Status:</th><td>Online</td></tr>
+          <tr><th>Here for:</th><td>Networking, Friends</td></tr>
+          <tr><th>Hometown:</th><td>Kuala Lumpur</td></tr>
+          <tr><th>Occupation:</th><td>Frontend Engineering Intern</td></tr>
+          <tr><th>Smoke / Drink:</th><td>No / No</td></tr>
+        </table>
+
+        <table class="ptable">
+          <tr><th class="thead" colspan="2">Blub's Interests</th></tr>
+          <tr><th>General</th><td>edit me in src/components/BrowserWindow.astro</td></tr>
+          <tr><th>Music</th><td>nightcore remixes of songs that were fine before</td></tr>
+          <tr><th>Games</th><td>ask bwubbu (that's me, in-game)</td></tr>
+          <tr><th>Heroes</th><td>the debug duck (see friend space)</td></tr>
+        </table>
+
+        <table class="ptable">
+          <tr><th class="thead" colspan="2">Blub's Schools</th></tr>
+          <tr><th>School:</th><td>Universiti Malaya<br /><small>Kuala Lumpur, MALAYSIA</small></td></tr>
+        </table>
+      </div>
+
+      <div class="pcol-r">
+        <div class="extnet">Blub is in your extended network</div>
+
+        <div class="rsec">
+          <h4 class="orangetitle">Blub's Latest Blog Entry <button class="plink" data-err="You are already subscribed. You are the only subscriber.">[Subscribe to this Blog]</button></h4>
+          <p class="blogline"><button class="plink" data-open="wii">shipped: RamahAI</button> <small>(view more)</small></p>
+          <p class="blogline"><button class="plink" data-err="This blog entry is about the blog entry feature itself. It is very recursive.">new site who dis</button> <small>(view more)</small></p>
+          <p class="blogline"><b>[<button class="plink" data-open="wii">View All Blog Entries</button>]</b></p>
+        </div>
+
+        <div class="rsec">
+          <h4 class="orangetitle">Blub's Blurbs</h4>
+          <h5 class="subttl">About me:</h5>
+          <p>developer / builder / tinkerer / human.<br />who you are, what you do — edit me in src/components/BrowserWindow.astro.</p>
+          <h5 class="subttl">Who I'd like to meet:</h5>
+          <p>recruiters, collaborators, and anyone who still remembers their top 8. <a href={`mailto:${email}`}>say hi</a> or find me on <a href={github} target="_blank" rel="noreferrer">GitHub</a>.</p>
+        </div>
+
+        <div class="rsec">
+          <h4 class="orangetitle">Blub's Friend Space</h4>
+          <p>Blub has <b class="red" id="fcount">4</b> friends.</p>
+          <div class="top8" id="top8" data-user={github.split('/').pop()}>
+            <figure><figcaption>the debug duck</figcaption><i>DD</i></figure>
+            <figure><figcaption>old rig (P4)</figcaption><i>P4</i></figure>
+            <figure><figcaption>56k modem</figcaption><i>56k</i></figure>
+            <figure><figcaption>blubamp</figcaption><i>♫</i></figure>
+          </div>
+          <p class="viewall"><b>[<a href={`${github}?tab=followers`} target="_blank" rel="noreferrer">View All of Blub's Friends</a>]</b></p>
+        </div>
+
+        <div class="rsec">
+          <h4 class="orangetitle">Blub's Friends Comments</h4>
+          <p>Displaying <b class="red" id="cmt-shown">2</b> of <b class="red" id="cmt-total">2</b> comments (<a href="https://github.com/bwubbu/bwubbu.lol/issues/4" target="_blank" rel="noreferrer">Add Comment</a>)</p>
+          <table class="cmt" id="cmts" data-repo="bwubbu/bwubbu.lol" data-issue="4">
+            <tr>
+              <td class="who">the debug duck<br /><i>DD</i></td>
+              <td class="what"><b>quack</b><br /><br />(this means ship it)</td>
+            </tr>
+            <tr>
+              <td class="who">56k modem<br /><i>56k</i></td>
+              <td class="what"><b>EEEEEE-AWWWWW kshhhhh</b><br /><br />thanks for waiting for me all those years</td>
+            </tr>
           </table>
         </div>
-        <div class="pbox"><h5>Profile Song</h5><div class="inner">♫ nightcore remix (192kbps)<br /><i>autoplay blocked. you're welcome.</i></div></div>
-      </div>
-      <div class="pcol-r">
-        <div class="msbox">
-          <h5>Blub is in your extended network</h5>
-          <div class="inner"><b class="on">● ONLINE NOW</b> — "collecting glitters and shipping side projects ✧"<br />mood: nostalgic (✿◠‿◠)</div>
-        </div>
-        <div class="blurb">
-          <h4>About me:</h4>
-          <div class="inner">developer / builder / tinkerer / human.<br />who you are, what you do — edit me in src/components/BrowserWindow.astro.<br /><br />my rig: Pentium 4 · 512MB RAM · 56k modem (please be patient, images loading)</div>
-          <h4>Who I'd like to meet:</h4>
-          <div class="inner">recruiters, collaborators, fellow tinkerers, and whoever keeps beating my high scores.</div>
-        </div>
-        <div class="blurb">
-          <h4>Blub's Friend Space</h4>
-          <div class="inner">
-            <b>Blub has <span class="fcount">8</span> friends.</b>
-            <div class="top8">
-              <figure><i>🐱</i>the cat</figure>
-              <figure><i>☕</i>coffee</figure>
-              <figure><i>🦆</i>debug duck</figure>
-              <figure><i>📚</i>the docs</figure>
-              <figure><i>👾</i>side project</figure>
-              <figure><i>🌙</i>3am builds</figure>
-              <figure><i>💾</i>ctrl+s</figure>
-              <figure><i>🍜</i>instant noodles</figure>
-            </div>
-            <button class="plink" data-err="That's all of them. That's the whole list.">View All of Blub's Friends</button>
-          </div>
-        </div>
-        <div class="blurb">
-          <h4>Blub's Friends Comments</h4>
-          <div class="inner">
-            <b>Displaying 3 of 4216 comments</b>
-            <div class="cmt"><div class="who"><i>🦆</i>debug duck</div><div class="what"><small>Jun 6 2026 3:04 AM</small><br />quack. (u fixed it the moment u explained it to me. as always.)</div></div>
-            <div class="cmt"><div class="who"><i>🐱</i>the cat</div><div class="what"><small>Jun 2 2026 4:44 PM</small><br />walked on ur keyboard. shipped ur commit. no ragrets ✧</div></div>
-            <div class="cmt"><div class="who"><i>☕</i>coffee</div><div class="what"><small>May 28 2026 8:00 AM</small><br />thanks 4 the add!! see u in 20 minutes lol</div></div>
-          </div>
-        </div>
+
       </div>
     </div>
-    <hr class="rainbow" />
-    <div class="constr"><b>⚠ UNDER CONSTRUCTION ⚠</b></div>
-    <p>you are visitor number: <span class="lcd" id="hits">000000</span></p>
-    <p><a href={`mailto:${email}`}>sign my guestbook</a> · <a href="/">back to desktop</a></p>
-    <p class="webring">[ ← prev | <a href={github} target="_blank" rel="noreferrer">random</a> | next → ] part of the dev webring</p>
-    <div class="badges">
-      <span style="background:#000">MADE WITH NOTEPAD</span>
-      <span style="background:#005a9c">HTML 4.01</span>
-      <span style="background:#7a3f00">56K FRIENDLY</span>
-      <span style="background:#c2187e">GLITTER 4 LIFE</span>
-    </div>
-    <p class="foot">best viewed at 800×600 · est. 2026 · no frames, no shame ✧･ﾟ:*</p>
+    <p class="foot">©2003-2026 blubspace.com. All Rights Reserved.</p>
   </div></div>
-  <div class="statusbar"><span>Done</span><span>🌐 Internet</span></div>
+  <div class="statusbar"><span>Done</span><span><Icon name="globe" class="favi" stroke={2} /> Internet</span></div>
 </XpWindow>
