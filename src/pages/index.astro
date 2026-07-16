@@ -8,6 +8,7 @@ import Blubamp from '../components/Blubamp.astro';
 import Taskbar from '../components/Taskbar.astro';
 import StartMenu from '../components/StartMenu.astro';
 import BrowserWindow from '../components/BrowserWindow.astro';
+import StickyNote from '../components/StickyNote.astro';
 import WiiMenu from '../components/WiiMenu.astro';
 import PS2Experience from '../components/PS2Experience.astro';
 
@@ -79,6 +80,8 @@ const DESKTOP_ICONS = [
     <Blubamp />
 
     <BrowserWindow email={EMAIL} github={GITHUB} />
+
+    <StickyNote />
 
     <XpWindow id="contact" title="New Message" style="left:24%;top:32%" menubar={['File', 'Edit', 'Insert', 'Format', 'Help']}>
       <div class="wbody"><div class="wpad form">

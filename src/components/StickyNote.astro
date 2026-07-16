@@ -1,0 +1,50 @@
+---
+// Post-it welcome note stuck on the desktop, revealed after boot (see bootUp in desktop.ts).
+---
+
+<aside class="sticky" id="sticky" aria-label="Welcome note">
+  <button class="stickyx" id="stickyx" aria-label="Peel off">✕</button>
+  <b>welcome to blubOS !! \(^o^)/</b>
+  <p>
+    ☆ <u>My Projects</u> — a whole wii menu<br />
+    ☆ <u>Experience</u> — my cv, lovingly saved<br />
+    &nbsp;&nbsp;&nbsp;on a ps2 memory card<br />
+    ☆ <u>about.html</u> — the lore<br />
+    ☆ <u>Contact Me</u> — say hi !!
+  </p>
+  <small>p.s. drag the windows around.<br />i know you want to.</small>
+</aside>
+
+<style>
+  .sticky {
+    position: absolute; left: 50%; top: 50%; z-index: 5;
+    width: 218px; padding: 26px 16px 18px;
+    translate: -50% -50%;
+    background: linear-gradient(160deg, #fff9a8 0%, #ffef62 78%, #f5d93c 100%);
+    box-shadow: 2px 5px 12px rgba(0, 0, 0, .35);
+    transform: rotate(3.5deg);
+    font: 13px/1.45 'Comic Sans MS', 'Segoe Print', 'Marker Felt', cursive;
+    color: #4a3b0c;
+    display: none;
+  }
+  /* folded bottom-right corner */
+  .sticky::after {
+    content: ''; position: absolute; right: 0; bottom: 0;
+    border: 11px solid transparent;
+    border-top-color: #d8bc2e; border-left-color: #d8bc2e;
+    filter: drop-shadow(-2px -2px 2px rgba(0, 0, 0, .12));
+  }
+  .sticky.on { display: block; animation: peel .35s ease-out; }
+  @keyframes peel {
+    from { opacity: 0; transform: rotate(9deg) scale(.85) translateY(-14px); }
+  }
+  .sticky b { display: block; margin-bottom: 8px; }
+  .sticky p { margin: 0 0 8px; }
+  .sticky small { font-size: 11px; opacity: .75; }
+  .stickyx {
+    position: absolute; top: 5px; right: 7px;
+    border: 0; background: none; cursor: pointer;
+    font: bold 12px/1 inherit; color: #8a731d;
+  }
+  .stickyx:hover { color: #4a3b0c; }
+</style>

@@ -3,7 +3,7 @@
 // All behaviour lives in src/scripts/desktop.ts.
 ---
 
-<div class="boot" id="boot" title="click to skip">
+<div class="boot" id="boot">
   <div class="bootlogo">
     <svg class="flag" viewBox="0 0 64 64" aria-hidden="true">
       <path d="M6 18 Q18 10 30 16 L28 30 Q16 25 8 31 Z" fill="#e13d2f"></path>
@@ -14,8 +14,11 @@
     <p><i>bwubbu presents</i>blubOS<sup>xp</sup></p>
   </div>
   <div class="bootbar"><i><b></b></i></div>
-  <p class="boothint">click to skip the nostalgia</p>
 </div>
+<!-- runs synchronously during parse so return visits never flash the boot screen -->
+<script is:inline>
+  if (sessionStorage.getItem('xpBooted')) document.getElementById('boot').classList.add('done');
+</script>
 
 <div class="off" id="off">
   <p>it is now safe to close this tab.<small>(or click anywhere to boot back up)</small></p>
