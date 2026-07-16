@@ -165,13 +165,14 @@ const boot = document.getElementById('boot')!;
 const off = document.getElementById('off')!;
 const offdlg = document.getElementById('offdlg')!;
 const balloon = document.getElementById('balloon')!;
+const sticky = document.getElementById('sticky')!;
+document.getElementById('stickyx')!.onclick = () => sticky.classList.remove('on');
 function bootUp() {
   boot.classList.remove('done');
   setTimeout(() => boot.classList.add('done'), 2400);
-  setTimeout(() => { openWin('browser'); balloon.classList.add('on'); }, 3000);
+  setTimeout(() => { sticky.classList.add('on'); balloon.classList.add('on'); }, 3000);
   setTimeout(() => balloon.classList.remove('on'), 12000);
 }
-boot.onclick = () => boot.classList.add('done');
 document.getElementById('turnoff')!.onclick = () => { startmenu.classList.remove('open'); offdlg.classList.add('on'); };
 document.getElementById('offcancel')!.onclick = () => offdlg.classList.remove('on');
 offdlg.onclick = (e) => { if (e.target === offdlg) offdlg.classList.remove('on'); };
@@ -309,11 +310,17 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
   });
 }
 
+/* github data goes via /api/github (see api/github.js) so browsers never
+   spend their own network's anonymous per-IP rate limit */
+const gh = (path: string, params = '') =>
+  fetch(`/api/github?path=${path}${params}`).then((r) => (r.ok ? r.json() : Promise.reject()));
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
 /* friend space: real github followers; the built-in weirdos stay if this fails */
 const top8 = document.getElementById('top8');
 if (top8?.dataset.user) {
-  const gh = (path: string) => fetch(`https://api.github.com/users/${top8.dataset.user}${path}`).then((r) => (r.ok ? r.json() : Promise.reject()));
-  Promise.all([gh(''), gh('/followers?per_page=8')])
+  const u = top8.dataset.user;
+  Promise.all([gh(`users/${u}`), gh(`users/${u}/followers`, '&per_page=8')])
     .then(([user, followers]: [{ followers: number }, { login: string; avatar_url: string; html_url: string }[]]) => {
       if (!followers.length) return;
       document.getElementById('fcount')!.textContent = String(user.followers);
@@ -327,10 +334,8 @@ if (top8?.dataset.user) {
 /* friends comments: a github issue is the guestbook; fallback quacks stay if it fails */
 const cmts = document.getElementById('cmts');
 if (cmts?.dataset.issue) {
-  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-  const issueApi = `https://api.github.com/repos/${cmts.dataset.repo}/issues/${cmts.dataset.issue}`;
-  const j = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Promise.reject()));
-  Promise.all([j(issueApi), j(`${issueApi}/comments?per_page=10`)])
+  const issue = `repos/${cmts.dataset.repo}/issues/${cmts.dataset.issue}`;
+  Promise.all([gh(issue), gh(`${issue}/comments`, '&per_page=10')])
     .then(([issue, comments]: [{ comments: number }, { body: string; created_at: string; user: { login: string; avatar_url: string; html_url: string } }[]]) => {
       if (!comments.length) return;
       document.getElementById('cmt-shown')!.textContent = String(comments.length);
@@ -344,12 +349,78 @@ if (cmts?.dataset.issue) {
     .catch(() => {});
 }
 
-/* hit counter — counts this visitor's own visits, like the real thing never did */
-const hits = document.getElementById('hits');
+/* live sidebar details + avatar, straight from the github user record */
+const GHDATE = (s: string, opts: Intl.DateTimeFormatOptions) => new Date(s).toLocaleDateString('en-GB', opts);
+const LANGCOLOR: Record<string, string> = {
+  TypeScript: '#3178c6', JavaScript: '#f1e05a', Python: '#3572a5', HTML: '#e34c26',
+  CSS: '#639', Astro: '#ff5a03', Go: '#00add8', Rust: '#dea584', Java: '#b07219',
+  Kotlin: '#a97bff', Swift: '#f05138', Dart: '#00b4ab', 'C#': '#178600', 'C++': '#f34b7d',
+};
+const setText = (id: string, v: string | number) => { const n = document.getElementById(id); if (n) n.textContent = String(v); };
+const av = document.getElementById('pavatar') as HTMLImageElement | null;
+if (av?.dataset.user) {
+  gh(`users/${av.dataset.user}`)
+    .then((user: { created_at: string; public_repos: number; followers: number; following: number; avatar_url?: string }) => {
+      if (user.avatar_url) {
+        av.onerror = () => { av.onerror = null; av.src = '/profile-pic.jpg'; };
+        av.src = `${user.avatar_url}&s=210`;
+      }
+      setText('gh-since', GHDATE(user.created_at, { month: 'short', year: 'numeric' }));
+      setText('gh-repos', user.public_repos);
+      setText('gh-followers', user.followers);
+      setText('gh-following', user.following);
+      setText('badge-followers', user.followers);
+    })
+    .catch(() => {});
+}
+
+/* pinned repos (graphql-only, the proxy exposes them as path=pinned) rendered
+   as github-style cards; the joke ones stay if this fails */
+const pinned = document.getElementById('pinned');
+if (pinned) {
+  gh('pinned')
+    .then((pins: { name: string; html_url: string; stargazers_count: number; language: string | null; description: string | null }[]) => {
+      if (!pins.length) return;
+      pinned.innerHTML = pins.map((p) => {
+        const c = LANGCOLOR[p.language ?? ''] ?? '#9bb8d4';
+        return `<div class="pin"><a href="${p.html_url}" target="_blank" rel="noreferrer">${p.name}</a><p>${esc(p.description ?? '')}</p><small><i class="dot" style="background:${c}"></i> ${p.language ?? 'vibes'}${p.stargazers_count ? ` · ★ ${p.stargazers_count}` : ''}</small></div>`;
+      }).join('');
+    })
+    .catch(() => {});
+}
+
+/* mood ring: public events become a 13-week heatmap. ponytail: one page of
+   events (latest 100), weeks not aligned to sunday — it's a mood ring, not a
+   spreadsheet; paginate if it ever reads too pale */
+const mood = document.getElementById('moodgrid');
+if (mood?.dataset.user) {
+  const drawMood = (counts: Map<string, number>) => {
+    let cells = '';
+    for (let i = 90; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10);
+      const n = counts.get(d) ?? 0;
+      cells += `<i data-lvl="${Math.min(n, 3)}" title="${d}: ${n} events"></i>`;
+    }
+    mood.innerHTML = cells;
+  };
+  drawMood(new Map());
+  gh(`users/${mood.dataset.user}/events`, '&per_page=100')
+    .then((events: { created_at: string }[]) => {
+      const counts = new Map<string, number>();
+      events.forEach((e) => { const d = e.created_at.slice(0, 10); counts.set(d, (counts.get(d) ?? 0) + 1); });
+      drawMood(counts);
+      const week = events.filter((e) => Date.now() - +new Date(e.created_at) < 7 * 864e5).length;
+      setText('mood-now', week > 10 ? 'locked in' : week > 3 ? 'shipping' : week > 0 ? 'lurking' : 'touching grass');
+    })
+    .catch(() => {});
+}
+
+/* profile views badge — counts this visitor's own visits, like komarev never did */
+const hits = document.getElementById('pviews');
 if (hits) {
   const n = (parseInt(localStorage.getItem('hits') ?? '4216', 10) || 4216) + 1;
   localStorage.setItem('hits', String(n));
-  hits.textContent = String(n).padStart(6, '0');
+  hits.textContent = String(n);
 }
 
 /* boot once per session; skip the wait on return visits within the tab */
