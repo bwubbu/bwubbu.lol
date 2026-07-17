@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="Tahoma, Verdana, sans-serif">
+  <!-- hand-rolled test card: colour bars + NO SIGNAL, stands in until a real screenshot exists -->
+  <rect width="640" height="360" fill="#111"/>
+  <g>
+    <rect x="0" width="92" height="250" fill="#c0c0c0"/>
+    <rect x="92" width="92" height="250" fill="#c0c000"/>
+    <rect x="184" width="91" height="250" fill="#00c0c0"/>
+    <rect x="275" width="91" height="250" fill="#00c000"/>
+    <rect x="366" width="91" height="250" fill="#c000c0"/>
+    <rect x="457" width="91" height="250" fill="#c00000"/>
+    <rect x="548" width="92" height="250" fill="#0000c0"/>
+  </g>
+  <g>
+    <rect x="0" y="250" width="160" height="30" fill="#00214c"/>
+    <rect x="160" y="250" width="160" height="30" fill="#fff"/>
+    <rect x="320" y="250" width="160" height="30" fill="#32006a"/>
+    <rect x="480" y="250" width="160" height="30" fill="#131313"/>
+  </g>
+  <text x="320" y="322" text-anchor="middle" fill="#fff" font-size="24" font-weight="bold" letter-spacing="6">NO SIGNAL</text>
+  <text x="320" y="345" text-anchor="middle" fill="#9aa4ae" font-size="13">screenshot coming soon · please stand by</text>
+</svg>
