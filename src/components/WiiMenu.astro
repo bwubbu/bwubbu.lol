@@ -7,7 +7,7 @@
 interface Props {
   projects: {
     slug: string; title: string; summary: string; featured: boolean;
-    tech: string[]; repo?: string; demo?: string; embed?: boolean; Content: any;
+    tech: string[]; repo?: string; demo?: string; embed?: boolean; image?: string; Content: any;
   }[];
 }
 const { projects } = Astro.props;
@@ -26,8 +26,9 @@ const empties = Array.from({ length: target - projects.length });
             {p.embed && p.demo && (
               <iframe class="wii-live" src={p.demo} title="" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe>
             )}
+            {!(p.embed && p.demo) && p.image && <img class="wii-shot" src={p.image} alt="" loading="lazy" />}
             <span class="wii-name">{p.title}</span>
-            {!(p.embed && p.demo) && <span class="wii-tagline">{p.summary}</span>}
+            {!(p.embed && p.demo) && !p.image && <span class="wii-tagline">{p.summary}</span>}
             {p.featured && <span class="wii-star" title="Featured">★</span>}
           </span>
         </button>
@@ -80,6 +81,15 @@ const empties = Array.from({ length: target - projects.length });
                   <span class="preview-url">{p.demo}</span>
                 </div>
                 <iframe class="preview-frame" src={p.demo} title={`${p.title} live preview`} loading="lazy"></iframe>
+              </figure>
+            )}
+            {!(p.embed && p.demo) && p.image && (
+              <figure class="preview">
+                <div class="preview-bar">
+                  <span class="pd r"></span><span class="pd y"></span><span class="pd g"></span>
+                  <span class="preview-url">{p.demo ?? 'offline — screenshot'}</span>
+                </div>
+                <img class="preview-shot" src={p.image} alt={`${p.title} screenshot`} loading="lazy" />
               </figure>
             )}
 
@@ -157,7 +167,10 @@ const empties = Array.from({ length: target - projects.length });
     transform: scale(.3334); transform-origin: 0 0;
     border: 0; pointer-events: none; background: #fff;
   }
-  .wii-tv:has(.wii-live) .wii-name {
+  /* screenshot channel banner: static image filling the tv */
+  .wii-shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .wii-tv:has(.wii-live) .wii-name,
+  .wii-tv:has(.wii-shot) .wii-name {
     position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
     padding: 3px 14px; border-radius: 999px; font-size: 14px; white-space: nowrap;
     background: rgba(255, 255, 255, .88); box-shadow: 0 1px 4px rgba(40, 90, 150, .3);
@@ -220,6 +233,7 @@ const empties = Array.from({ length: target - projects.length });
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .preview-frame { display: block; width: 100%; height: 320px; border: 0; background: #fff; }
+  .preview-shot { display: block; width: 100%; max-height: 320px; object-fit: cover; background: #111; }
 
   .wii-page-links { display: flex; gap: 12px; }
   .wii-page-links .wii-pill { display: grid; place-items: center; text-decoration: none; }

@@ -11,6 +11,7 @@ const projects = defineCollection({
     repo: z.string().url().optional(),
     demo: z.string().url().optional(),
     embed: z.boolean().default(false), // show a live <iframe> preview of `demo` (only for hosts that allow framing)
+    image: z.string().optional(), // screenshot path for projects with no live embed (use /tv-placeholder.svg until one exists)
     featured: z.boolean().default(false),
     date: z.coerce.date(),
   }),
