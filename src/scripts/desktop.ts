@@ -60,6 +60,7 @@ function activate(item: HTMLElement) {
   else if (item.dataset.err) showError(item.dataset.err);
 }
 const clearSel = () => document.querySelectorAll('.sel').forEach((s) => s.classList.remove('sel'));
+const coarse = matchMedia('(pointer: coarse)').matches; // touch: open on a single tap
 
 const startmenu = document.getElementById('startmenu')!;
 const ctx = document.getElementById('ctx')!;
@@ -71,7 +72,7 @@ document.addEventListener('click', (e) => {
   if (item) {
     clearSel();
     item.classList.add('sel');
-    if (e.detail === 0) activate(item); // keyboard (Enter/Space)
+    if (e.detail === 0 || coarse) activate(item); // keyboard (Enter/Space), or a tap on touch
   } else if (!t.closest('.win, .startmenu, .taskbar, .balloon, .ctx')) {
     clearSel();
   }
@@ -209,23 +210,34 @@ if (wiiEl && wiiZoom) {
     const r = ch.getBoundingClientRect();
     return `translate(${r.left}px, ${r.top}px) scale(${r.width / innerWidth}, ${r.height / innerHeight})`;
   };
-  let lastChannel: HTMLElement | null = null;
+  // fade each channel's live/shot in over its spinner once it actually paints
+  wiiEl.querySelectorAll<HTMLImageElement | HTMLIFrameElement>('.wii-live, .wii-shot').forEach((m) => {
+    if (m instanceof HTMLImageElement && m.complete) m.classList.add('ready');
+    else m.addEventListener('load', () => m.classList.add('ready'), { once: true });
+  });
+
+  let lastTransform = ''; // tile rect captured while the grid is at rest, reused on zoom-out
   wiiEl.addEventListener('click', (e) => {
     const t = e.target as HTMLElement;
     const ch = t.closest('.wii-channel[data-zoom]') as HTMLElement | null;
     if (ch) {
-      lastChannel = ch;
+      lastTransform = tileRect(ch); // grid not yet scaled here, so this is the true resting rect
+      wiiZoom.classList.remove('settled'); // show the plain thumbnail while it expands
       wiiZoom.querySelectorAll<HTMLElement>('.wii-page').forEach((p) => p.classList.toggle('show', p.dataset.slug === ch.dataset.zoom));
       wiiZoom.style.transformOrigin = '0 0';
       wiiZoom.style.transition = 'none';
-      wiiZoom.style.transform = tileRect(ch);
+      wiiZoom.style.transform = lastTransform;
       void wiiZoom.offsetWidth; // flush so the zoom animates from the tile
       wiiZoom.style.transition = '';
       wiiEl.classList.add('zoomed');
       wiiZoom.style.transform = 'none';
+      // ponytail: 560ms tracks the .55s CSS zoom; reveal content only once it's settled.
+      // guarded so a quick zoom-out before it fires doesn't pop content onto a closed page.
+      setTimeout(() => { if (wiiEl.classList.contains('zoomed')) wiiZoom.classList.add('settled'); }, 560);
     }
     if (t.closest('[data-wii-back]')) {
-      if (lastChannel) wiiZoom.style.transform = tileRect(lastChannel);
+      wiiZoom.classList.remove('settled'); // drop back to the thumbnail before shrinking
+      if (lastTransform) wiiZoom.style.transform = lastTransform;
       wiiEl.classList.remove('zoomed');
     }
   });
@@ -389,30 +401,70 @@ if (pinned) {
     .catch(() => {});
 }
 
-/* mood ring: public events become a 13-week heatmap. ponytail: one page of
-   events (latest 100), weeks not aligned to sunday — it's a mood ring, not a
-   spreadsheet; paginate if it ever reads too pale */
+/* mood ring: GitHub's real full-year contribution calendar (weeks = columns,
+   Sun→Sat = rows), rendered like GitHub with month + weekday labels. Needs
+   GITHUB_TOKEN on the proxy; without it we fall back to the ~90-day events
+   heatmap (the events API only exposes ~90 days, so no full year there). */
 const mood = document.getElementById('moodgrid');
 if (mood?.dataset.user) {
-  const drawMood = (counts: Map<string, number>) => {
-    let cells = '';
-    for (let i = 90; i >= 0; i--) {
-      const d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10);
-      const n = counts.get(d) ?? 0;
-      cells += `<i data-lvl="${Math.min(n, 3)}" title="${d}: ${n} events"></i>`;
-    }
-    mood.innerHTML = cells;
-  };
-  drawMood(new Map());
-  gh(`users/${mood.dataset.user}/events`, '&per_page=100')
-    .then((events: { created_at: string }[]) => {
-      const counts = new Map<string, number>();
-      events.forEach((e) => { const d = e.created_at.slice(0, 10); counts.set(d, (counts.get(d) ?? 0) + 1); });
-      drawMood(counts);
-      const week = events.filter((e) => Date.now() - +new Date(e.created_at) < 7 * 864e5).length;
-      setText('mood-now', week > 10 ? 'locked in' : week > 3 ? 'shipping' : week > 0 ? 'lurking' : 'touching grass');
+  const lvl = (n: number) => (n === 0 ? 0 : n <= 2 ? 1 : n <= 5 ? 2 : n <= 9 ? 3 : 4);
+  const nice = (s: string) => new Date(s + 'T00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const moodNow = (n: number) => setText('mood-now', n > 10 ? 'locked in' : n > 3 ? 'shipping' : n > 0 ? 'lurking' : 'touching grass');
+
+  gh('contributions')
+    .then((cal: { total: number; weeks: { date: string; count: number }[][]; breakdown?: { commits: number; prs: number; issues: number; reviews: number } }) => {
+      // ponytail: the first/last partial week fills from the top row instead of
+      // its true weekday — a mood ring, not a calendar audit
+      mood.innerHTML = cal.weeks
+        .map((w) => w.map((d) => `<i data-lvl="${lvl(d.count)}" title="${d.count} contribution${d.count === 1 ? '' : 's'} on ${nice(d.date)}"></i>`).join(''))
+        .join('');
+
+      const months = document.getElementById('mood-months');
+      if (months) {
+        let prev = -1;
+        months.innerHTML = cal.weeks.map((w) => {
+          const m = new Date(w[0].date + 'T00:00').getMonth();
+          const label = m !== prev ? new Date(w[0].date + 'T00:00').toLocaleDateString('en-GB', { month: 'short' }) : '';
+          prev = m;
+          return `<span>${label}</span>`;
+        }).join('');
+      }
+
+      setText('mood-total', cal.total);
+      moodNow(cal.weeks.flat().slice(-7).reduce((a, d) => a + d.count, 0));
+
+      const acts = document.getElementById('mood-acts');
+      if (acts && cal.breakdown) {
+        const b = cal.breakdown;
+        const rows = [['Commits', b.commits], ['Pull requests', b.prs], ['Code review', b.reviews], ['Issues', b.issues]] as const;
+        const sum = rows.reduce((a, [, n]) => a + n, 0) || 1;
+        acts.innerHTML = rows.map(([label, n]) => {
+          const pct = Math.round((n / sum) * 100);
+          return `<div class="act"><span class="act-l">${label}</span><span class="act-bar"><i style="width:${pct}%"></i></span><span class="act-p">${pct}%</span></div>`;
+        }).join('');
+      }
     })
-    .catch(() => {});
+    .catch(() => {
+      // no token → ~90-day events heatmap (weeks not sunday-aligned; it's a mood ring)
+      const draw = (counts: Map<string, number>) => {
+        let cells = '';
+        for (let i = 90; i >= 0; i--) {
+          const d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10);
+          const n = counts.get(d) ?? 0;
+          cells += `<i data-lvl="${lvl(n)}" title="${n} event${n === 1 ? '' : 's'} on ${nice(d)}"></i>`;
+        }
+        mood.innerHTML = cells;
+      };
+      draw(new Map());
+      gh(`users/${mood.dataset.user}/events`, '&per_page=100')
+        .then((events: { created_at: string }[]) => {
+          const counts = new Map<string, number>();
+          events.forEach((e) => { const d = e.created_at.slice(0, 10); counts.set(d, (counts.get(d) ?? 0) + 1); });
+          draw(counts);
+          moodNow(events.filter((e) => Date.now() - +new Date(e.created_at) < 7 * 864e5).length);
+        })
+        .catch(() => {});
+    });
 }
 
 /* profile views badge — counts this visitor's own visits, like komarev never did */

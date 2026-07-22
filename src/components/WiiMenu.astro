@@ -54,7 +54,7 @@ const empties = Array.from({ length: target - projects.length });
       <path class="wave-fill" d="M0,16 L170,16 C245,16 255,92 330,92 L670,92 C745,92 755,16 830,16 L1000,16 L1000,140 L0,140 Z"/>
       <path class="wave-line" vector-effect="non-scaling-stroke" d="M0,16 L170,16 C245,16 255,92 330,92 L670,92 C745,92 755,16 830,16 L1000,16"/>
     </svg>
-    <button class="wii-orb wii-back" data-overlay-close aria-label="Back to desktop">Wii</button>
+    <button class="wii-orb wii-back" data-overlay-close aria-label="Back to desktop">Back</button>
     <div class="wii-clockstack" aria-hidden="true">
       <div class="wii-time" id="wii-clock"></div>
       <div class="wii-date" id="wii-date"></div>
@@ -66,6 +66,14 @@ const empties = Array.from({ length: target - projects.length });
   <div class="wii-zoom" id="wii-zoom">
     {projects.map((p) => (
       <section class="wii-page" data-slug={p.slug}>
+        <!-- thumbnail shown while the page zooms; crossfades to the card once settled -->
+        <div class="wii-tv wii-page-thumb" aria-hidden="true">
+          {p.embed && p.demo && (
+            <iframe class="wii-live" src={p.demo} title="" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe>
+          )}
+          {!(p.embed && p.demo) && p.image && <img class="wii-shot" src={p.image} alt="" loading="lazy" />}
+          <span class="wii-name">{p.title}</span>
+        </div>
         <div class="wii-page-tv">
           <article class="wii-card">
             <header class="wii-card-head">
@@ -80,7 +88,9 @@ const empties = Array.from({ length: target - projects.length });
                   <span class="pd r"></span><span class="pd y"></span><span class="pd g"></span>
                   <span class="preview-url">{p.demo}</span>
                 </div>
-                <iframe class="preview-frame" src={p.demo} title={`${p.title} live preview`} loading="lazy"></iframe>
+                <div class="preview-view">
+                  <iframe class="preview-frame" src={p.demo} title={`${p.title} live preview`} loading="lazy"></iframe>
+                </div>
               </figure>
             )}
             {!(p.embed && p.demo) && p.image && (
@@ -98,7 +108,7 @@ const empties = Array.from({ length: target - projects.length });
           </article>
         </div>
         <div class="wii-page-bar">
-          <button class="wii-pill" data-wii-back>Wii Menu</button>
+          <button class="wii-pill" data-wii-back>Back</button>
           <div class="wii-page-links">
             {p.repo && <a class="wii-pill" href={p.repo} target="_blank" rel="noreferrer">View repo</a>}
             {p.demo && <a class="wii-pill wii-start" href={p.demo} target="_blank" rel="noreferrer">Live demo</a>}
@@ -169,6 +179,17 @@ const empties = Array.from({ length: target - projects.length });
   }
   /* screenshot channel banner: static image filling the tv */
   .wii-shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  /* spinner is the box's resting look until its live/shot paints in, so a zoom-out
+     reveal (or first load) fades to content instead of popping from blank */
+  .wii-tv:has(.wii-live)::before,
+  .wii-tv:has(.wii-shot)::before {
+    content: ""; position: absolute; top: 50%; left: 50%; width: 24px; height: 24px; margin: -12px 0 0 -12px;
+    border: 3px solid rgba(31, 59, 99, .2); border-top-color: #57a9ff; border-radius: 50%;
+    animation: wiispin .8s linear infinite;
+  }
+  @keyframes wiispin { to { transform: rotate(360deg); } }
+  .wii-live, .wii-shot { opacity: 0; transition: opacity .4s ease; }
+  .wii-live.ready, .wii-shot.ready { opacity: 1; }
   .wii-tv:has(.wii-live) .wii-name,
   .wii-tv:has(.wii-shot) .wii-name {
     position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
@@ -192,10 +213,21 @@ const empties = Array.from({ length: target - projects.length });
 
   /* ---- zoomed-in banner ---- */
   .wii-zoom {
-    position: fixed; inset: 0; visibility: hidden; will-change: transform;
-    transition: transform .55s cubic-bezier(.25, .8, .3, 1), visibility 0s linear .55s;
+    position: fixed; inset: 0; opacity: 0; visibility: hidden; will-change: transform, opacity;
+    /* zoom-out: shrink over .55s, then fade the last .25s so the grid tile crossfades in
+       underneath instead of hard-cutting from banner content to thumbnail */
+    transition: transform .55s cubic-bezier(.25, .8, .3, 1), opacity .25s ease .3s, visibility 0s linear .55s;
   }
-  .wii.zoomed .wii-zoom { visibility: visible; transition: transform .55s cubic-bezier(.25, .8, .3, 1); }
+  .wii.zoomed .wii-zoom { opacity: 1; visibility: visible; transition: transform .55s cubic-bezier(.25, .8, .3, 1), opacity .2s ease; }
+  /* thumbnail-first: the tile-matching thumbnail covers the page during the zoom;
+     it crossfades to the card + action bar once the zoom settles */
+  .wii-page-thumb {
+    position: absolute; inset: 0; z-index: 2; aspect-ratio: auto; border-radius: 0;
+    transition: opacity .3s ease;
+  }
+  .wii-zoom.settled .wii-page-thumb { opacity: 0; pointer-events: none; }
+  .wii-card, .wii-page-bar { opacity: 0; transition: opacity .3s ease; }
+  .wii-zoom.settled .wii-card, .wii-zoom.settled .wii-page-bar { opacity: 1; }
 
   .wii-page { display: none; position: absolute; inset: 0; flex-direction: column; }
   .wii-page.show { display: flex; }
@@ -204,7 +236,7 @@ const empties = Array.from({ length: target - projects.length });
     background: linear-gradient(160deg, #eaf4ff, #bcd8f5);
   }
   .wii-card {
-    max-width: 760px; margin: 0 auto; padding: 22px 26px; border-radius: 14px;
+    max-width: 1040px; margin: 0 auto; padding: 22px 26px; border-radius: 14px;
     background: rgba(255, 255, 255, .82); border: 2px solid #fff;
     box-shadow: 0 4px 16px rgba(40, 90, 150, .2);
   }
@@ -232,7 +264,12 @@ const empties = Array.from({ length: target - projects.length });
     margin-left: 6px; font-size: 11px; color: #5b6b82;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .preview-frame { display: block; width: 100%; height: 320px; border: 0; background: #fff; }
+  /* render the site at ~2x desktop width, then scale to fit so it reads as a real desktop view */
+  .preview-view { height: 340px; overflow: hidden; }
+  .preview-frame {
+    display: block; width: 200%; height: 680px; border: 0; background: #fff;
+    transform: scale(.5); transform-origin: 0 0;
+  }
   .preview-shot { display: block; width: 100%; max-height: 320px; object-fit: cover; background: #111; }
 
   .wii-page-links { display: flex; gap: 12px; }
@@ -286,8 +323,28 @@ const empties = Array.from({ length: target - projects.length });
   .wii-orb:focus-visible { outline: 3px solid #57a9ff; outline-offset: 2px; }
   .wii-back:hover { filter: brightness(1.04); }
 
+  @media (max-width: 620px) {
+    .wii { padding: 16px 10px 150px; }
+    .wii-panel { width: 94vw; max-height: calc(100vh - 190px); overflow-y: auto; }
+    .wii-grid { gap: 8px; }
+    .wii-name { font-size: 14px; }
+    .wii-tv:has(.wii-live) .wii-name, .wii-tv:has(.wii-shot) .wii-name { font-size: 11px; padding: 2px 9px; }
+    .wii-card { padding: 16px 14px; }
+    .wii-page-tv { padding: 16px 14px; }
+    .wii-page-bar { flex-wrap: wrap; justify-content: center; gap: 10px; padding: 14px 16px; }
+    .wii-page-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .wii-pill { min-width: 130px; padding: 11px 20px; font-size: 15px; }
+    .wii-time { font-size: 32px; letter-spacing: 2px; }
+    .wii-time :global(span) { font-size: 13px; }
+    .wii-date { font-size: 18px; margin-top: 10px; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .wii-zoom, .wii-panel { transition: none; }
     .wii-channel:not(.wii-empty):hover, .wii-time :global(b) { animation: none; }
+    .wii-tv:has(.wii-live)::before, .wii-tv:has(.wii-shot)::before { animation: none; }
+    .wii-live, .wii-shot { opacity: 1; transition: none; }
+    .wii-card, .wii-page-bar { opacity: 1; transition: none; }
+    .wii-page-thumb { display: none; }
   }
 </style>

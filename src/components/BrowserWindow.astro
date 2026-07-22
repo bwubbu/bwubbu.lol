@@ -111,8 +111,22 @@ const BANNER = `https://raw.githubusercontent.com/${GHUSER}/${GHUSER}/main/heade
         <div class="rsec">
           <h4 class="orangetitle">Blub's Mood Ring</h4>
           <p>Current mood: <b class="red" id="mood-now">shipping</b> ✨</p>
-          <div class="mood" id="moodgrid" data-user={GHUSER}></div>
-          <p class="moodkey"><small>the last 13 weeks of github contributions, as read by a mood ring — pale ♡ hot pink</small></p>
+          <div class="cal">
+            <div class="cal-row">
+              <div class="cal-days"><span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span></div>
+              <div class="cal-main">
+                <div class="cal-months" id="mood-months"></div>
+                <div class="mood" id="moodgrid" data-user={GHUSER}></div>
+              </div>
+            </div>
+            <div class="cal-legend">
+              <small>Less</small>
+              <i data-lvl="0"></i><i data-lvl="1"></i><i data-lvl="2"></i><i data-lvl="3"></i><i data-lvl="4"></i>
+              <small>More</small>
+            </div>
+          </div>
+          <p class="moodkey"><small>the last year of github contributions — <b id="mood-total">…</b> in total</small></p>
+          <div class="acts" id="mood-acts"></div>
         </div>
 
         <div class="rsec">
