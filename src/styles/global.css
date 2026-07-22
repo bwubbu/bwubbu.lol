@@ -528,13 +528,38 @@ body.desktop { overflow: hidden; }
 .pin small { color: #666; }
 .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #9bb8d4; vertical-align: -1px; }
 
-/* mood ring: 13 weeks of github activity as tiny pink squares (7 rows, column flow) */
-.mood { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 11px); grid-auto-columns: 11px; gap: 2px; padding: 4px 0; }
-.mood i { background: #eef4fb; border: 1px solid #d8e6f5; }
-.mood i[data-lvl="1"] { background: #ffd1ea; border-color: #ffb3dd; }
-.mood i[data-lvl="2"] { background: #ff8fce; border-color: #ff6fbe; }
-.mood i[data-lvl="3"] { background: #ff44a8; border-color: #e02a8e; }
+/* mood ring: GitHub's full-year contribution calendar (weeks = columns, 7 rows), styled 2004-pink */
+.cal { margin: 6px 0; }
+.cal-row { display: flex; gap: 5px; }
+.cal-days { display: grid; grid-template-rows: repeat(7, 1fr); align-self: stretch; width: 22px; font-size: 9px; color: #8aa0bd; }
+.cal-days span { display: flex; align-items: center; }
+.cal-main { flex: 1; min-width: 0; }
+.cal-months { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin-bottom: 3px; font-size: 9px; color: #8aa0bd; }
+.cal-months span { white-space: nowrap; }
+.mood {
+  display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); grid-auto-columns: 1fr;
+  gap: 3px; width: 100%; aspect-ratio: 53 / 7;
+}
+.mood i {
+  background: #eef4fb; border: 1px solid #d8e6f5; border-radius: 2px; cursor: pointer;
+  transition: transform .1s ease, box-shadow .1s ease;
+}
+.mood i:hover { transform: scale(1.5); box-shadow: 0 0 0 2px #fff, 0 2px 6px rgba(40, 90, 150, .35); z-index: 1; }
+.mood i[data-lvl="1"], .cal-legend i[data-lvl="1"] { background: #ffd1ea; border-color: #ffb3dd; }
+.mood i[data-lvl="2"], .cal-legend i[data-lvl="2"] { background: #ff8fce; border-color: #ff6fbe; }
+.mood i[data-lvl="3"], .cal-legend i[data-lvl="3"] { background: #ff44a8; border-color: #e02a8e; }
+.mood i[data-lvl="4"], .cal-legend i[data-lvl="4"] { background: #c9187f; border-color: #a80f68; }
+.cal-legend { display: flex; align-items: center; justify-content: flex-end; gap: 3px; margin-top: 6px; font-size: 10px; color: #8aa0bd; }
+.cal-legend small { margin: 0 3px; }
+.cal-legend i { width: 11px; height: 11px; border-radius: 2px; background: #eef4fb; border: 1px solid #d8e6f5; }
 .moodkey { color: #666; }
+/* activity overview: commit/PR/review/issue split as pink bars */
+.acts { display: grid; gap: 5px; margin-top: 8px; }
+.act { display: grid; grid-template-columns: 84px 1fr 34px; align-items: center; gap: 8px; font-size: 11px; }
+.act-l { color: #5b6b82; white-space: nowrap; }
+.act-bar { height: 9px; background: #eef4fb; border: 1px solid #d8e6f5; border-radius: 999px; overflow: hidden; }
+.act-bar i { display: block; height: 100%; background: linear-gradient(90deg, #ff8fce, #ff44a8); }
+.act-p { text-align: right; color: #8aa0bd; }
 
 /* comments: name cell light blue, comment cell pale blue */
 .cmt { width: 100%; border-collapse: separate; border-spacing: 2px; }
@@ -619,7 +644,15 @@ body.docpage { overflow: auto; }
 }
 @media (max-width: 620px) {
   .desktop .win { left: 4px !important; top: 36px !important; width: calc(100vw - 8px); }
+  .desktop .win:not(.dialog) { resize: none; } /* resize grip is unusable on touch */
   .taskpane { display: none; }
+  .taskbtn { min-width: 0; } /* let buttons shrink so the bar fits a phone */
   .startmenu { width: calc(100vw - 8px); }
   .docpage .win { width: calc(100vw - 16px); margin: 16px auto; }
+  /* about.html (MySpace) content: reflow instead of scrolling sideways */
+  .mshead { flex-wrap: wrap; }
+  .pcol-l { flex-basis: 100%; }
+  .top8 { grid-template-columns: repeat(3, 1fr); }
+  .top8 img { width: 100%; height: auto; aspect-ratio: 1 / 1; }
+  .cmt .who { width: 84px; }
 }

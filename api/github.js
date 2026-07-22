@@ -29,6 +29,30 @@ export default async function handler(req, res) {
     }
   }
 
+  // full-year contribution calendar (GitHub's graph) — GraphQL only, needs the token
+  if (path === 'contributions') {
+    if (!process.env.GITHUB_TOKEN) return res.status(501).json({ error: 'GITHUB_TOKEN required for contributions' });
+    try {
+      const query = '{ user(login: "bwubbu") { contributionsCollection { totalCommitContributions totalPullRequestContributions totalIssueContributions totalPullRequestReviewContributions contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } } } } }';
+      const r = await fetch('https://api.github.com/graphql', { method: 'POST', headers, body: JSON.stringify({ query }) });
+      const cc = (await r.json())?.data?.user?.contributionsCollection;
+      const cal = cc?.contributionCalendar;
+      if (!cal) return res.status(502).json({ error: 'no calendar' });
+      return res.status(200).json({
+        total: cal.totalContributions,
+        weeks: cal.weeks.map((w) => w.contributionDays.map((d) => ({ date: d.date, count: d.contributionCount }))),
+        breakdown: {
+          commits: cc.totalCommitContributions,
+          prs: cc.totalPullRequestContributions,
+          issues: cc.totalIssueContributions,
+          reviews: cc.totalPullRequestReviewContributions,
+        },
+      });
+    } catch {
+      return res.status(502).json({ error: 'github unreachable' });
+    }
+  }
+
   if (!ALLOWED.test(path)) return res.status(400).json({ error: 'path not allowed' });
 
   const per = Math.min(parseInt(req.query.per_page, 10) || 0, 100);
