@@ -16,16 +16,6 @@ const EXPERIENCES = [
     ],
   },
   {
-    key: 'cynex', badge: 'CX', company: 'CyNex Labs', sub: 'IoT research & innovation lab, Universiti Malaya',
-    role: 'Laboratory Assistant', date: 'Oct 2025 – Feb 2026',
-    note: 'Research lab supporting IoT projects',
-    bullets: [
-      'Maintained 100% equipment uptime across 30–50 devices (Raspberry Pi, ESP32, 3D printers) for active student research.',
-      'Maintained and deployed SmartGrow, a student-built IoT plant-management system, through active development.',
-      'Ran regular equipment audits, keeping hardware inventory accurate and research-ready.',
-    ],
-  },
-  {
     key: 'necopy', badge: 'NA', company: 'Necopy Art', sub: 'Artist merchandise & e-commerce platform',
     role: 'Freelance Web Developer', date: 'Feb 2025 – Sep 2025',
     note: 'Artist-focused e-commerce',
@@ -120,7 +110,8 @@ const EXPERIENCES = [
   }
 
   /* grid of spinning 3D save "models" */
-  .ps2-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .ps2-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .ps2-save { width: 160px; }
   /* saves sit bare on the background (no tile); the cursor lights the focused one */
   .ps2-save {
     position: relative;
@@ -160,6 +151,22 @@ const EXPERIENCES = [
   .ps2-save:nth-child(2) .ps2-cube-3d span, .ps2-view:nth-child(2) .ps2-cube-3d span { background: linear-gradient(135deg, #7fd8c0, #1f8f7a); }
   .ps2-save:nth-child(3) .ps2-cube-3d span, .ps2-view:nth-child(3) .ps2-cube-3d span { background: linear-gradient(135deg, #d9a0f0, #8a3fb0); }
   .ps2-save:nth-child(4) .ps2-cube-3d span, .ps2-view:nth-child(4) .ps2-cube-3d span { background: linear-gradient(135deg, #f0c878, #c98a2a); }
+  /* Ryt cube shows the logo photo on every face instead of the badge letters */
+  .ps2-save[data-save="ryt"] .ps2-cube-3d span,
+  .ps2-view[data-save="ryt"] .ps2-cube-3d span {
+    background: #fff url('/rytbank.jpeg') center / cover no-repeat;
+    color: transparent; text-shadow: none;
+  }
+  .ps2-save[data-save="necopy"] .ps2-cube-3d span,
+  .ps2-view[data-save="necopy"] .ps2-cube-3d span {
+    background: url('/necopy.png') center / contain no-repeat;
+    color: transparent; text-shadow: none;
+  }
+  .ps2-save[data-save="visionone"] .ps2-cube-3d span,
+  .ps2-view[data-save="visionone"] .ps2-cube-3d span {
+    background: url('/visionone.png') center / contain no-repeat;
+    color: transparent; text-shadow: none;
+  }
   @keyframes ps2spin { to { transform: rotateX(360deg) rotateY(360deg); } }
 
   /* browsing vs viewing: the grid gives way to the loaded save */
@@ -207,7 +214,6 @@ const EXPERIENCES = [
   .pb-t { color: #74e08a; font-size: 15px; }
 
   @media (max-width: 640px) {
-    .ps2-grid { grid-template-columns: repeat(2, 1fr); }
     .ps2-title { font-size: 15px; }
     .ps2-view.show { flex-direction: column; align-items: center; }
     .ps2-detail { width: 100%; }

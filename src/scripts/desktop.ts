@@ -478,7 +478,6 @@ if (hits) {
 /* boot once per session; skip the wait on return visits within the tab */
 if (sessionStorage.getItem('xpBooted')) {
   boot.classList.add('done');
-  openWin('browser');
 } else {
   sessionStorage.setItem('xpBooted', '1');
   bootUp();
