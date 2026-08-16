@@ -53,6 +53,34 @@ body.desktop { overflow: hidden; }
 .hill { position: absolute; inset: auto 0 0 0; height: 42%; }
 .hill svg { width: 100%; height: 100%; display: block; }
 
+/* ---- selectable wallpapers (CSS-only; set from the Wallpapers folder) ----
+   shared by the full-screen body background and the swatch thumbnails */
+:root {
+  --wall-sunset: linear-gradient(to bottom, #241a4a 0%, #7a3b8f 32%, #ff6f91 62%, #ff9a3c 82%, #ffd36e 100%);
+  --wall-aqua: radial-gradient(120% 90% at 25% 18%, #5fd6e6 0%, #12a3b4 42%, #0a5a8a 100%);
+  --wall-vapor:
+    repeating-linear-gradient(90deg, transparent 0 38px, rgba(255, 79, 163, .35) 38px 40px),
+    linear-gradient(#120b2e 0%, #3a1160 46%, #ff4fa3 50%, #3a1160 54%, #120b2e 62%, #120b2e 100%);
+  --wall-matrix:
+    repeating-linear-gradient(0deg, rgba(0, 255, 80, .07) 0 2px, transparent 2px 4px),
+    radial-gradient(80% 80% at 50% 40%, #032b0f, #000);
+  --wall-stars:
+    radial-gradient(1.5px 1.5px at 18% 24%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 62% 15%, #cfe, transparent),
+    radial-gradient(1px 1px at 82% 46%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 35% 68%, #fff, transparent),
+    radial-gradient(1px 1px at 74% 78%, #def, transparent),
+    linear-gradient(#0a0a2e, #06061a);
+}
+body[data-wall="sunset"] { background: var(--wall-sunset); }
+body[data-wall="aqua"]   { background: var(--wall-aqua); }
+body[data-wall="vapor"]  { background: var(--wall-vapor); }
+body[data-wall="matrix"] { background: var(--wall-matrix); }
+body[data-wall="stars"]  { background: var(--wall-stars); }
+/* every wallpaper but Bliss replaces the sky gradient + hill scenery */
+body[data-wall]:not([data-wall="bliss"]) .hill,
+body[data-wall]:not([data-wall="bliss"]) .clouds { display: none; }
+
 /* ================= desktop icons ================= */
 .icons { position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; gap: 10px; z-index: 5; }
 .dicon {
@@ -134,7 +162,6 @@ body.desktop { overflow: hidden; }
 }
 .tb:hover { border-color: #b8d0f0; background: linear-gradient(#fdfefe, #e8f0fb); }
 .tb svg { width: 20px; height: 20px; }
-.tb .caret { font-size: 8px; }
 .tb.dis { opacity: .45; pointer-events: none; }
 .tbsep { width: 1px; align-self: stretch; margin: 2px 3px; background: #d8d4c4; border-right: 1px solid #fff; }
 .addrbar {
@@ -160,21 +187,6 @@ body.desktop { overflow: hidden; }
 }
 .statusbar span { border: 1px solid; border-color: #cac6b6 #fff #fff #cac6b6; padding: 2px 8px; }
 .statusbar span:first-child { flex: 1; }
-
-/* explorer task pane */
-.taskpane {
-  width: 176px; flex: none; padding: 10px; overflow: auto;
-  background: linear-gradient(to bottom, #7ba2e7, #6375d6);
-}
-.tgroup { border-radius: 4px 4px 0 0; overflow: hidden; margin-bottom: 10px; box-shadow: 1px 1px 3px rgba(0,0,20,.25); }
-.tgroup h4 {
-  font-size: 11px; color: #215dc6; padding: 5px 10px; font-weight: bold;
-  background: linear-gradient(to right, #fff, #c7d9f7);
-}
-.tgroup div { background: #d6dff7; padding: 7px 10px; display: flex; flex-direction: column; gap: 6px; }
-.tgroup a { color: #215dc6; text-decoration: none; font-size: 11px; }
-.tgroup a:hover { color: #428eff; text-decoration: underline; }
-.tgroup p { font-size: 10px; color: #4a5a80; line-height: 1.5; }
 
 /* file list */
 .filelist { flex: 1; padding: 10px; display: flex; flex-wrap: wrap; gap: 2px; align-content: flex-start; overflow: auto; background: #fff; }
@@ -493,9 +505,7 @@ body.desktop { overflow: hidden; }
 /* right column */
 .rsec { margin-bottom: 14px; }
 .orangetitle { color: #f60; font-size: 14px; font-weight: bold; margin: 0 0 6px; }
-.subttl { color: #f60; font-size: 11px; font-weight: bold; margin: 8px 0 2px; }
 .rsec p { margin: 4px 0; line-height: 1.5; }
-.blogline small { color: #666; }
 .red { color: #c00; }
 .viewall { text-align: center; }
 
@@ -643,9 +653,8 @@ body.docpage { overflow: auto; }
   *, *::before, *::after { animation-duration: .01s !important; animation-iteration-count: 1 !important; transition: none !important; }
 }
 @media (max-width: 620px) {
-  .desktop .win { left: 4px !important; top: 36px !important; width: calc(100vw - 8px); }
+  .desktop .win { left: 4px !important; top: 36px !important; width: calc(100vw - 8px) !important; }
   .desktop .win:not(.dialog) { resize: none; } /* resize grip is unusable on touch */
-  .taskpane { display: none; }
   .taskbtn { min-width: 0; } /* let buttons shrink so the bar fits a phone */
   .startmenu { width: calc(100vw - 8px); }
   .docpage .win { width: calc(100vw - 16px); margin: 16px auto; }

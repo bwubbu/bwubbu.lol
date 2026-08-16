@@ -1,9 +1,11 @@
 ---
-// Wii-Menu-style channel launcher (v3). A full-screen overlay with a 2x2
-// channel grid. Clicking a channel zooms it to a full-screen "banner" page
-// (like the real Wii) that renders the whole project — summary, preview,
-// tech, links, and the markdown body. Wii Menu (bottom left) zooms back out.
+// Wii-Menu-style channel launcher (v3). A blubOS window holding a 2x2
+// channel grid. Clicking a channel zooms it to a "banner" page that fills the
+// window body and renders the whole project — summary, preview, tech, links,
+// and the markdown body. The Back orb (bottom left) zooms back out / closes.
 // "Inspired by", not a clone — no Nintendo assets, fonts, or music.
+import XpWindow from './XpWindow.astro';
+import Icon from './Icon.astro';
 interface Props {
   projects: {
     slug: string; title: string; summary: string; featured: boolean;
@@ -11,14 +13,13 @@ interface Props {
   }[];
 }
 const { projects } = Astro.props;
-
-// Pad with empty channels so the grid always reads as a full 2x2 board.
-const target = Math.max(4, Math.ceil(projects.length / 2) * 2);
-const empties = Array.from({ length: target - projects.length });
 ---
 
-<div class="wii overlay" id="wii" aria-hidden="true">
+<XpWindow id="wii" title="Projects" style="left:6%;top:6%;width:min(720px,94vw);height:min(560px,80vh)" max>
+  <Icon name="wiimote" class="ticon" stroke={2} slot="icon" />
+  <div class="wbody"><div class="wii" id="wii">
   <div class="wii-panel">
+    <button class="wii-nav prev" data-reel="-1" aria-label="Scroll left">‹</button>
     <div class="wii-grid">
       {projects.map((p) => (
         <button class="wii-channel" data-zoom={p.slug}>
@@ -33,12 +34,8 @@ const empties = Array.from({ length: target - projects.length });
           </span>
         </button>
       ))}
-      {empties.map(() => (
-        <span class="wii-channel wii-empty" aria-hidden="true">
-          <span class="wii-tv"></span>
-        </span>
-      ))}
     </div>
+    <button class="wii-nav next" data-reel="1" aria-label="Scroll right">›</button>
   </div>
 
   <!-- bottom bar: one broad two-swoop wave — high at the edges, shallow valley
@@ -54,7 +51,7 @@ const empties = Array.from({ length: target - projects.length });
       <path class="wave-fill" d="M0,16 L170,16 C245,16 255,92 330,92 L670,92 C745,92 755,16 830,16 L1000,16 L1000,140 L0,140 Z"/>
       <path class="wave-line" vector-effect="non-scaling-stroke" d="M0,16 L170,16 C245,16 255,92 330,92 L670,92 C745,92 755,16 830,16 L1000,16"/>
     </svg>
-    <button class="wii-orb wii-back" data-overlay-close aria-label="Back to desktop">Back</button>
+    <button class="wii-orb wii-back" data-close aria-label="Close">Back</button>
     <div class="wii-clockstack" aria-hidden="true">
       <div class="wii-time" id="wii-clock"></div>
       <div class="wii-date" id="wii-date"></div>
@@ -117,22 +114,22 @@ const empties = Array.from({ length: target - projects.length });
       </section>
     ))}
   </div>
-</div>
+  </div></div>
+</XpWindow>
 
 <style>
+  /* fills the blubOS window body; the window chrome handles show/hide */
   .wii {
-    position: fixed; inset: 0; z-index: 5000; display: grid; place-items: center;
-    padding: 24px 24px 170px; /* keep the grid clear of the clock + bottom bar */
+    position: relative; flex: 1; width: 100%; min-height: 0; overflow: hidden;
+    display: grid; place-items: center;
+    padding: 20px 20px 160px; /* keep the grid clear of the clock + bottom bar */
     background:
       repeating-linear-gradient(0deg, rgba(120, 130, 140, .05) 0 1px, transparent 1px 5px),
       linear-gradient(#f7f8f9, #e9ebed);
     font-family: "Varela Round", "Trebuchet MS", Tahoma, sans-serif;
-    opacity: 0; visibility: hidden; transform: scale(1.03);
-    transition: opacity .28s ease, transform .28s ease, visibility 0s linear .28s;
   }
-  .wii.on { opacity: 1; visibility: visible; transform: none; transition: opacity .28s ease, transform .28s ease; }
   .wii-panel {
-    width: min(92vw, 680px); display: flex; flex-direction: column;
+    position: relative; width: 100%; display: flex; flex-direction: column;
     transition: opacity .35s ease, transform .5s ease;
   }
   /* zooming in: the grid rushes past the camera while the banner expands */
@@ -140,14 +137,41 @@ const empties = Array.from({ length: target - projects.length });
   .wii-bottom { transition: opacity .3s ease; }
   .wii.zoomed .wii-bottom { opacity: 0; }
 
-  .wii-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  /* channels sit close together in a white rim with a thin grey keyline, like the real grid */
+  /* a horizontal reel of channels: swipe on touch, scroll/arrows on desktop —
+     like the real Wii paging sideways through channels */
+  .wii-grid {
+    display: flex; gap: 12px; overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x mandatory; scroll-padding-left: 2px;
+    padding: 4px 2px 10px; scrollbar-width: thin; scrollbar-color: #9db8d4 transparent;
+    overscroll-behavior-x: contain;
+  }
+  .wii-grid::-webkit-scrollbar { height: 8px; }
+  .wii-grid::-webkit-scrollbar-thumb { background: #9db8d4; border-radius: 4px; }
+  .wii-grid::-webkit-scrollbar-track { background: transparent; }
+  /* channels sit in a white rim with a thin grey keyline, like the real grid;
+     fixed basis so they don't shrink — the next tile peeks to afford swiping */
   .wii-channel {
+    flex: 0 0 min(80%, 300px); scroll-snap-align: start;
     display: flex; flex-direction: column; padding: 0; cursor: pointer; text-align: center;
     border: 4px solid #fff; border-radius: 18px; overflow: hidden; background: #fff;
     box-shadow: 0 0 0 1px #c9cfd4, 0 3px 8px rgba(70, 90, 110, .15);
     transition: transform .16s ease, box-shadow .16s ease;
   }
+  /* paging arrows flanking the reel — desktop only; touch just swipes */
+  .wii-nav {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 4;
+    width: 34px; height: 58px; border-radius: 12px; cursor: pointer;
+    border: 3px solid #fff; background: linear-gradient(#ffffff, #e7f0f8); color: #4a6584;
+    font: bold 24px "Varela Round", "Trebuchet MS", Tahoma, sans-serif; line-height: 1;
+    box-shadow: 0 2px 0 #b9cbe0, 0 4px 10px rgba(40, 90, 150, .2);
+    display: grid; place-items: center;
+  }
+  .wii-nav.prev { left: -8px; }
+  .wii-nav.next { right: -8px; }
+  .wii-nav:hover { filter: brightness(1.04); transform: translateY(-50%) scale(1.05); }
+  .wii-nav:active { transform: translateY(-50%); }
+  .wii-nav:focus-visible { outline: 3px solid #57a9ff; outline-offset: 2px; }
+  @media (pointer: coarse) { .wii-nav { display: none; } }
   .wii-channel:not(.wii-empty):hover {
     transform: translateY(-3px);
     box-shadow: 0 0 0 1px #c9cfd4, 0 8px 16px rgba(70, 90, 110, .24);
@@ -198,13 +222,6 @@ const empties = Array.from({ length: target - projects.length });
   }
 
   .wii-star { position: absolute; top: 8px; right: 10px; color: #f5b301; font-size: 17px; text-shadow: 0 1px 1px rgba(0, 0, 0, .3); }
-  /* empty slots: white screens with a faint embossed lens, like unused channel slots */
-  .wii-empty { cursor: default; }
-  .wii-empty .wii-tv {
-    background:
-      radial-gradient(ellipse 16% 62% at 50% 50%, #dfe3e6, transparent 72%),
-      linear-gradient(#fff, #f0f2f4);
-  }
 
   /* channel + matching banner share a colour, cycled by position */
   .wii-channel:nth-child(4n+2) .wii-tv, .wii-page:nth-child(4n+2) .wii-page-tv { background: linear-gradient(160deg, #eafff0, #b7e8c6); }
@@ -213,7 +230,7 @@ const empties = Array.from({ length: target - projects.length });
 
   /* ---- zoomed-in banner ---- */
   .wii-zoom {
-    position: fixed; inset: 0; opacity: 0; visibility: hidden; will-change: transform, opacity;
+    position: absolute; inset: 0; opacity: 0; visibility: hidden; will-change: transform, opacity;
     /* zoom-out: shrink over .55s, then fade the last .25s so the grid tile crossfades in
        underneath instead of hard-cutting from banner content to thumbnail */
     transition: transform .55s cubic-bezier(.25, .8, .3, 1), opacity .25s ease .3s, visibility 0s linear .55s;
@@ -325,7 +342,7 @@ const empties = Array.from({ length: target - projects.length });
 
   @media (max-width: 620px) {
     .wii { padding: 16px 10px 150px; }
-    .wii-panel { width: 94vw; max-height: calc(100vh - 190px); overflow-y: auto; }
+    .wii-panel { width: 100%; max-height: 100%; overflow-y: auto; }
     .wii-grid { gap: 8px; }
     .wii-name { font-size: 14px; }
     .wii-tv:has(.wii-live) .wii-name, .wii-tv:has(.wii-shot) .wii-name { font-size: 11px; padding: 2px 9px; }

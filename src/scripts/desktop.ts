@@ -5,6 +5,16 @@ let z = 10;
 const taskbtns = document.getElementById('taskbtns')!;
 const el = (id: string) => document.getElementById('win-' + id) as HTMLElement | null;
 
+/* wallpapers: left-click a swatch to set the desktop background; the choice
+   persists. Applied first so the saved wallpaper is up before the boot clears. */
+function setWall(key: string, save = true) {
+  document.body.dataset.wall = key;
+  if (save) localStorage.setItem('wall', key);
+  document.querySelectorAll<HTMLElement>('.wall').forEach((w) => w.classList.toggle('active', w.dataset.wall === key));
+}
+setWall(localStorage.getItem('wall') || 'bliss', false);
+document.querySelectorAll<HTMLElement>('.wall').forEach((w) => w.addEventListener('click', () => setWall(w.dataset.wall!)));
+
 function focusWin(w: HTMLElement) {
   w.style.zIndex = String(++z);
   document.querySelectorAll('.win.active').forEach((o) => o !== w && o.classList.remove('active'));
@@ -12,8 +22,6 @@ function focusWin(w: HTMLElement) {
   document.querySelectorAll('.taskbtn').forEach((b) => b.classList.toggle('active', b.id === 'task-' + w.id.slice(4)));
 }
 function openWin(id: string) {
-  const overlay = document.getElementById(id);
-  if (overlay?.classList.contains('overlay')) { overlay.classList.add('on'); return; }
   const w = el(id);
   if (!w) return;
   w.classList.remove('min', 'minning');
@@ -196,20 +204,26 @@ balloon.onclick = (e) => {
   if ((e.target as HTMLElement).id !== 'bx') openWin('wii');
 };
 
-/* overlays (wii channels, ps2 memory card): back buttons close them */
-document.querySelectorAll<HTMLElement>('.overlay').forEach((ov) => {
-  ov.querySelector('[data-overlay-close]')?.addEventListener('click', () => ov.classList.remove('on'));
-});
-/* wii: clicking a channel zooms into its banner page (FLIP: start the
-   fullscreen page at the tile's rect, then release it to fill the screen).
-   The banner holds the whole project; "Wii Menu" zooms back out. */
+/* wii: clicking a channel zooms into its banner page (FLIP: start the page at
+   the tile's rect, then release it to fill the window body). The banner holds
+   the whole project; the per-page Back pill zooms back out. */
 const wiiEl = document.getElementById('wii');
 const wiiZoom = document.getElementById('wii-zoom');
 if (wiiEl && wiiZoom) {
+  // rects are relative to the zoom's parent (the window body area), not the
+  // viewport, so the banner fills the window rather than the whole screen
   const tileRect = (ch: HTMLElement) => {
+    const b = wiiZoom.parentElement!.getBoundingClientRect();
     const r = ch.getBoundingClientRect();
-    return `translate(${r.left}px, ${r.top}px) scale(${r.width / innerWidth}, ${r.height / innerHeight})`;
+    return `translate(${r.left - b.left}px, ${r.top - b.top}px) scale(${r.width / b.width}, ${r.height / b.height})`;
   };
+  // desktop paging arrows scroll the channel reel (touch just swipes)
+  const wiiReel = wiiEl.querySelector<HTMLElement>('.wii-grid');
+  wiiEl.querySelectorAll<HTMLElement>('[data-reel]').forEach((btn) => {
+    btn.addEventListener('click', () =>
+      wiiReel?.scrollBy({ left: Number(btn.dataset.reel) * wiiReel.clientWidth * 0.8, behavior: 'smooth' }));
+  });
+
   // fade each channel's live/shot in over its spinner once it actually paints
   wiiEl.querySelectorAll<HTMLImageElement | HTMLIFrameElement>('.wii-live, .wii-shot').forEach((m) => {
     if (m instanceof HTMLImageElement && m.complete) m.classList.add('ready');
@@ -259,7 +273,8 @@ document.getElementById('ps2-back')?.addEventListener('click', () => {
     ps2El!.classList.remove('viewing');
     if (ps2Title) ps2Title.textContent = 'Select a data file';
   } else {
-    ps2El!.classList.remove('on');
+    const w = el('ps2');
+    if (w) closeWin(w);
   }
 });
 

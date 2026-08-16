@@ -1,0 +1,55 @@
+---
+// Wallpapers folder: a grid of CSS-only wallpaper swatches. Left-clicking one
+// sets the desktop background (desktop.ts applies it via body[data-wall] and
+// remembers the choice). "Inspired by" retro OS themes — no shipped images.
+import XpWindow from './XpWindow.astro';
+import Icon from './Icon.astro';
+
+const WALLPAPERS = [
+  { key: 'bliss', name: 'Bliss' },
+  { key: 'sunset', name: 'Sunset' },
+  { key: 'aqua', name: 'Aqua' },
+  { key: 'vapor', name: 'Vaporwave' },
+  { key: 'matrix', name: 'Terminal' },
+  { key: 'stars', name: 'Starfield' },
+];
+---
+
+<XpWindow id="wallpapers" title="Wallpapers" style="left:30%;top:18%;width:min(440px,92vw)" menubar={['File', 'Edit', 'View', 'Help']}>
+  <Icon name="folder" class="ticon" stroke={2} slot="icon" />
+  <div class="wbody"><div class="wallpad">
+    {WALLPAPERS.map((w) => (
+      <button class="wall" data-wall={w.key} title={`Set ${w.name}`}>
+        <span class={`wall-thumb wall-${w.key}`}></span>
+        <small>{w.name}</small>
+      </button>
+    ))}
+  </div></div>
+  <div class="statusbar"><span>{WALLPAPERS.length} wallpapers</span><span>Left-click to apply</span></div>
+</XpWindow>
+
+<style>
+  .wallpad {
+    display: flex; flex-wrap: wrap; gap: 10px; padding: 12px; width: 100%;
+    align-content: flex-start; overflow: auto; background: #fff;
+  }
+  .wall {
+    width: 118px; padding: 5px; cursor: pointer; background: none;
+    border: 1px solid transparent; border-radius: 3px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .wall:hover { border-color: #b8d0f0; background: linear-gradient(#fdfefe, #e8f0fb); }
+  .wall.active { border-color: #7ba2e7; background: var(--hl); color: #fff; }
+  .wall small { font-size: 11px; }
+  .wall-thumb {
+    width: 100%; aspect-ratio: 4 / 3; border: 1px solid #8a97ad; border-radius: 2px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6);
+  }
+  /* thumbnails mirror the full-screen wallpapers (Bliss painted here directly) */
+  .wall-bliss { background: linear-gradient(to bottom, #2258c4 0%, #8ab8ec 52%, #dcedf8 62%, #7cb92f 62%, #2f671a 100%); }
+  .wall-sunset { background: var(--wall-sunset); }
+  .wall-aqua { background: var(--wall-aqua); }
+  .wall-vapor { background: var(--wall-vapor); }
+  .wall-matrix { background: var(--wall-matrix); }
+  .wall-stars { background: var(--wall-stars); }
+</style>

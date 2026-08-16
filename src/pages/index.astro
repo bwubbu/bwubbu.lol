@@ -11,6 +11,7 @@ import BrowserWindow from '../components/BrowserWindow.astro';
 import StickyNote from '../components/StickyNote.astro';
 import WiiMenu from '../components/WiiMenu.astro';
 import PS2Experience from '../components/PS2Experience.astro';
+import Wallpapers from '../components/Wallpapers.astro';
 
 // Pull projects at build time: featured first, then newest, bodies compiled.
 const entries = (await getCollection('projects')).sort(
@@ -26,10 +27,11 @@ const EMAIL = 'hello@bwubbu.lol';
 const GITHUB = 'https://github.com/bwubbu';
 
 const DESKTOP_ICONS = [
-  { open: 'wii', icon: 'wiimote', label: 'My Projects' },
-  { open: 'ps2', icon: 'card', label: 'Experience' },
   { open: 'browser', icon: 'globe', label: 'about.html' },
+  { open: 'ps2', icon: 'card', label: 'Experience' },
+  { open: 'wii', icon: 'wiimote', label: 'Projects' },
   { open: 'contact', icon: 'mail', label: 'Contact Me' },
+  { open: 'wallpapers', icon: 'folder', label: 'Wallpapers' },
   { open: 'trash', icon: 'bin', label: 'Recycle Bin' },
 ] as const;
 ---
@@ -115,16 +117,17 @@ const DESKTOP_ICONS = [
       </div>
       <div class="btnrow"><button class="xbtn" data-close>OK</button></div>
     </XpWindow>
+
+    <WiiMenu projects={projects.map((p) => ({ slug: p.slug, ...p.data, Content: p.Content }))} />
+    <PS2Experience />
+    <Wallpapers />
   </div>
 
   <!-- balloon -->
   <div class="balloon" id="balloon">
     <b><span class="bi">i</span> Welcome to blubOS <span class="bx" id="bx">✕</span></b>
-    New portfolio detected. Double-click <u>My Projects</u> to have a look around.
+    New portfolio detected. Double-click <u>Projects</u> to have a look around.
   </div>
-
-  <WiiMenu projects={projects.map((p) => ({ slug: p.slug, ...p.data, Content: p.Content }))} />
-  <PS2Experience />
 
   <StartMenu email={EMAIL} github={GITHUB} />
   <Taskbar />
